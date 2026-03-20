@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -29,6 +29,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginPage() {
   const { signInWithEmail, signInWithGoogle, signInWithApple } = useAuth()
+  const location = useLocation()
   const [authError, setAuthError] = useState<string | null>(null)
   const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | null>(null)
 
@@ -39,12 +40,12 @@ export function LoginPage() {
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) })
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(location.search)
     if (params.get('error')) {
       setAuthError(mapAuthError(null, true))
       window.history.replaceState({}, '', window.location.pathname)
     }
-  }, [])
+  }, [location.search])
 
   async function onSubmit(data: LoginFormData) {
     setAuthError(null)

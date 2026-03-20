@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -8,19 +8,20 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 
-const schema = z.object({
+const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Mínimo 6 caracteres'),
   confirmPassword: z.string().min(1, 'Confirmá tu contraseña'),
 }).refine(data => data.password === data.confirmPassword, {
   message: 'Las contraseñas no coinciden',
   path: ['confirmPassword'],
 })
-type FormData = z.infer<typeof schema>
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
 
 type PageState = 'checking' | 'invalid' | 'ready' | 'success'
 
 export function ResetPasswordPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [state, setState] = useState<PageState>('checking')
   const [authError, setAuthError] = useState<string | null>(null)
 
@@ -28,15 +29,17 @@ export function ResetPasswordPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  } = useForm<ResetPasswordFormData>({ resolver: zodResolver(resetPasswordSchema) })
 
   useEffect(() => {
     // Early signal: if URL hash has no type=recovery, show invalid immediately — no spinner needed.
-    const hash = new URLSearchParams(window.location.hash.slice(1))
+    const hash = new URLSearchParams(location.hash.slice(1))
     if (hash.get('type') !== 'recovery') {
       setState('invalid')
       return
     }
+
+    let timeout: ReturnType<typeof setTimeout>
 
     // Subscribe directly to supabase auth events — AuthContext's subscriber also fires
     // on PASSWORD_RECOVERY (it sets user/profile); this one enables the form.
@@ -49,7 +52,7 @@ export function ResetPasswordPage() {
 
     // 5-second timeout: if PASSWORD_RECOVERY never arrives, show expired state.
     // clearTimeout in cleanup prevents state updates on unmount.
-    const timeout = setTimeout(() => {
+    timeout = setTimeout(() => {
       subscription.unsubscribe()
       setState('invalid')
     }, 5000)
@@ -58,9 +61,9 @@ export function ResetPasswordPage() {
       clearTimeout(timeout)
       subscription.unsubscribe()
     }
-  }, [])
+  }, [location.hash])
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(data: ResetPasswordFormData) {
     setAuthError(null)
     const { error } = await supabase.auth.updateUser({ password: data.password })
     if (error) {
@@ -68,8 +71,13 @@ export function ResetPasswordPage() {
       return
     }
     setState('success')
-    setTimeout(() => navigate('/login'), 2000)
   }
+
+  useEffect(() => {
+    if (state !== 'success') return
+    const id = setTimeout(() => navigate('/login'), 2000)
+    return () => clearTimeout(id)
+  }, [state, navigate])
 
   if (state === 'checking') {
     return (

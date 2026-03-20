@@ -8,10 +8,10 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 
-const schema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().min(1, 'El email es requerido').email('Email inválido'),
 })
-type FormData = z.infer<typeof schema>
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
 
 export function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false)
@@ -21,9 +21,9 @@ export function ForgotPasswordPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  } = useForm<ForgotPasswordFormData>({ resolver: zodResolver(forgotPasswordSchema) })
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(data: ForgotPasswordFormData) {
     setAuthError(null)
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${window.location.origin}/reset-password`,
