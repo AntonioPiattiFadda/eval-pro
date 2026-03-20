@@ -68,7 +68,7 @@ interface AuthContextValue {
 ```
 onAuthStateChange handler:
   if session exists:
-    fetch profile from users table (role)
+    fetch from users table: SELECT role WHERE user_id = session.user.id
     setUser(session.user)
     setProfile({ role })
     setLoading(false)
@@ -113,7 +113,12 @@ All four auth pages live inside `AuthLayout`, which owns the split-panel shell (
 - Fields: email, password, confirm password
 - Zod schema: email valid, password min 6 chars, passwords match
 - Calls `supabase.auth.signUp({ email, password })`
-- **Role assignment:** A Supabase database trigger on `auth.users` insert populates the `users` table with a default `role` of `'client'`. Admins can change roles directly in the database. No role selection field on the registration form.
+- **User row creation:** A Supabase database trigger on `auth.users` insert creates a row in the `users` table with the following fields populated from the new auth user:
+  - `user_id` ← `NEW.id`
+  - `email` ← `NEW.email`
+  - `created_at` ← `NEW.created_at`
+  - `role` ← `'client'` (default; admins can change directly in the database)
+  No role selection field on the registration form.
 - On success: Supabase sends a confirmation email → show "check your inbox" success state (no redirect)
 - Link: "Already have an account? Sign in" → `/login`
 
@@ -195,6 +200,40 @@ Both dashboards are minimal placeholders — a centered card showing the user's 
 - `react-router-dom` v7 — to be installed
 
 No other new dependencies. All validation, form, and UI patterns follow the existing `LoginPage` conventions (Zod, react-hook-form, shadcn/ui components).
+
+---
+
+## 9. Database Setup (Supabase)
+
+### `users` table schema
+
+```sql
+create table public.users (
+  user_id  uuid primary key references auth.users(id) on delete cascade,
+  email    text not null,
+  role     text not null default 'client' check (role in ('profesional', 'client')),
+  created_at timestamptz not null default now()
+);
+```
+
+### Trigger — auto-create user row on registration
+
+```sql
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer as $$
+begin
+  insert into public.users (user_id, email, created_at, role)
+  values (NEW.id, NEW.email, NEW.created_at, 'client');
+  return NEW;
+end;
+$$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+```
+
+This trigger fires for every new signup (email/password and OAuth). No additional frontend code is needed to create the user row.
 
 ---
 
