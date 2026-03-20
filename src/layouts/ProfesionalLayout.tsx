@@ -6,6 +6,8 @@ export function ProfesionalLayout() {
 
   if (loading) return <div className="min-h-screen bg-background" />
   if (!user) return <Navigate to="/login" replace />
+  // profile is null only when AuthContext is signing out after a fetch error — !user guard above handles it.
+  // This check fires for authenticated users whose role is not 'profesional' (i.e., 'client').
   if (profile?.role !== 'profesional') return <Navigate to="/client/dashboard" replace />
 
   return (

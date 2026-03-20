@@ -15,6 +15,10 @@ export function AuthLayout() {
     )
   }
 
+  // Defensive: user present but profile null — AuthContext signs out on profile fetch error
+  // before setting loading=false, so this state should not be reachable in practice.
+  if (user && !profile) return <div className="min-h-screen bg-background" />
+
   return (
     <div className="min-h-screen bg-background flex">
 
