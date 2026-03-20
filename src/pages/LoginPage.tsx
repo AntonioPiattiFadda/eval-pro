@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -8,7 +9,6 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 
-// --- Error mapper ---
 function mapAuthError(error: AuthError | null, isOAuthCallback = false): string | null {
   if (!error && !isOAuthCallback) return null
   if (isOAuthCallback) return 'Error al autenticar con proveedor externo'
@@ -21,16 +21,14 @@ function mapAuthError(error: AuthError | null, isOAuthCallback = false): string 
   return 'Ocurrió un error. Intentá de nuevo'
 }
 
-// --- Zod schema ---
 const loginSchema = z.object({
   email: z.string().min(1, 'El email es requerido').email('Email inválido'),
   password: z.string().min(1, 'La contraseña es requerida').min(6, 'Mínimo 6 caracteres'),
 })
 type LoginFormData = z.infer<typeof loginSchema>
 
-// --- Component ---
 export function LoginPage() {
-  const { loading, signInWithEmail, signInWithGoogle, signInWithApple } = useAuth()
+  const { signInWithEmail, signInWithGoogle, signInWithApple } = useAuth()
   const [authError, setAuthError] = useState<string | null>(null)
   const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | null>(null)
 
@@ -40,7 +38,6 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) })
 
-  // Check for OAuth error in URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('error')) {
@@ -48,11 +45,6 @@ export function LoginPage() {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
-
-  // Blank screen while checking initial session (avoids flash for logged-in users)
-  if (loading) {
-    return <div className="min-h-screen bg-background" />
-  }
 
   async function onSubmit(data: LoginFormData) {
     setAuthError(null)
@@ -81,136 +73,113 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <>
+      <h2 className="font-display text-2xl font-semibold text-on-surface mb-2">
+        Iniciar sesión
+      </h2>
+      <p className="text-on-surface-variant text-sm mb-8">
+        Ingresá a tu cuenta para continuar
+      </p>
 
-      {/* Left panel — branding (desktop only) */}
-      <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 bg-surface-container-low">
-        <span className="text-primary font-display font-semibold text-2xl tracking-tight">
-          EvalPro
-        </span>
-        <div>
-          <h1 className="font-display text-5xl font-bold text-on-surface leading-tight mb-4">
-            Evaluación clínica<br />de alto rendimiento
-          </h1>
-          <p className="text-on-surface-variant text-lg">
-            Kinesiología · Nutrición · Psicología · Entrenamiento
-          </p>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-on-surface-variant text-sm">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="tu@email.com"
+            autoComplete="email"
+            {...register('email')}
+            className="bg-surface-container-lowest border-outline-variant text-on-surface placeholder:text-on-surface-variant"
+          />
+          {errors.email && (
+            <p className="text-error text-xs">{errors.email.message}</p>
+          )}
         </div>
-        <span className="text-on-surface-variant text-sm">© 2026 EvalPro</span>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-on-surface-variant text-sm">Contraseña</Label>
+            <Link to="/forgot-password" className="text-primary text-xs hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            autoComplete="current-password"
+            {...register('password')}
+            className="bg-surface-container-lowest border-outline-variant text-on-surface placeholder:text-on-surface-variant"
+          />
+          {errors.password && (
+            <p className="text-error text-xs">{errors.password.message}</p>
+          )}
+        </div>
+
+        {authError && (
+          <div className="bg-error-container rounded-lg px-4 py-3">
+            <p className="text-on-error-container text-sm">{authError}</p>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-primary-action hover:opacity-90 text-on-primary font-semibold"
+        >
+          {isSubmitting ? 'Ingresando…' : 'Ingresar'}
+        </Button>
+      </form>
+
+      <div className="flex items-center gap-3 my-6">
+        <div className="flex-1 h-px bg-outline-variant" />
+        <span className="text-on-surface-variant text-xs uppercase tracking-widest">o</span>
+        <div className="flex-1 h-px bg-outline-variant" />
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 md:px-16">
+      <div className="space-y-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleGoogle}
+          disabled={socialLoading !== null}
+          className="w-full border-outline-variant bg-surface-container text-on-surface hover:bg-surface-container-high"
+        >
+          {socialLoading === 'google' ? 'Redirigiendo…' : (
+            <span className="flex items-center gap-2">
+              <GoogleIcon />
+              Continuar con Google
+            </span>
+          )}
+        </Button>
 
-        {/* Mobile logo */}
-        <div className="md:hidden mb-10 text-center">
-          <span className="text-primary font-display font-semibold text-3xl tracking-tight">
-            EvalPro
-          </span>
-          <p className="text-on-surface-variant text-sm mt-2">Evaluación clínica profesional</p>
-        </div>
-
-        <div className="w-full max-w-sm">
-          <h2 className="font-display text-2xl font-semibold text-on-surface mb-2">
-            Iniciar sesión
-          </h2>
-          <p className="text-on-surface-variant text-sm mb-8">
-            Ingresá a tu cuenta para continuar
-          </p>
-
-          {/* Email/password form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-on-surface-variant text-sm">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                autoComplete="email"
-                {...register('email')}
-                className="bg-surface-container-lowest border-outline-variant text-on-surface placeholder:text-on-surface-variant"
-              />
-              {errors.email && (
-                <p className="text-error text-xs">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-on-surface-variant text-sm">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="current-password"
-                {...register('password')}
-                className="bg-surface-container-lowest border-outline-variant text-on-surface placeholder:text-on-surface-variant"
-              />
-              {errors.password && (
-                <p className="text-error text-xs">{errors.password.message}</p>
-              )}
-            </div>
-
-            {authError && (
-              <div className="bg-error-container rounded-lg px-4 py-3">
-                <p className="text-on-error-container text-sm">{authError}</p>
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-primary-action hover:opacity-90 text-on-primary font-semibold"
-            >
-              {isSubmitting ? 'Ingresando…' : 'Ingresar'}
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-outline-variant" />
-            <span className="text-on-surface-variant text-xs uppercase tracking-widest">o</span>
-            <div className="flex-1 h-px bg-outline-variant" />
-          </div>
-
-          {/* Social buttons */}
-          <div className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleGoogle}
-              disabled={socialLoading !== null}
-              className="w-full border-outline-variant bg-surface-container text-on-surface hover:bg-surface-container-high"
-            >
-              {socialLoading === 'google' ? 'Redirigiendo…' : (
-                <span className="flex items-center gap-2">
-                  <GoogleIcon />
-                  Continuar con Google
-                </span>
-              )}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleApple}
-              disabled={socialLoading !== null}
-              className="w-full border-outline-variant bg-surface-container text-on-surface hover:bg-surface-container-high"
-            >
-              {socialLoading === 'apple' ? 'Redirigiendo…' : (
-                <span className="flex items-center gap-2">
-                  <AppleIcon />
-                  Continuar con Apple
-                </span>
-              )}
-            </Button>
-          </div>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleApple}
+          disabled={socialLoading !== null}
+          className="w-full border-outline-variant bg-surface-container text-on-surface hover:bg-surface-container-high"
+        >
+          {socialLoading === 'apple' ? 'Redirigiendo…' : (
+            <span className="flex items-center gap-2">
+              <AppleIcon />
+              Continuar con Apple
+            </span>
+          )}
+        </Button>
       </div>
-    </div>
+
+      <p className="text-center text-on-surface-variant text-sm mt-6">
+        ¿No tenés cuenta?{' '}
+        <Link to="/register" className="text-primary hover:underline font-medium">
+          Registrate
+        </Link>
+      </p>
+    </>
   )
 }
 
-// --- Inline SVG icons ---
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
