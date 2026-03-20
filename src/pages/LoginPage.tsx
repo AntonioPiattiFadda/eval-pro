@@ -152,7 +152,7 @@ export function LoginPage() {
 
             {authError && (
               <div className="bg-error-container rounded-lg px-4 py-3">
-                <p className="text-on-surface text-sm">{authError}</p>
+                <p className="text-on-error-container text-sm">{authError}</p>
               </div>
             )}
 

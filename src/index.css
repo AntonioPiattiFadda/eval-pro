@@ -32,8 +32,9 @@
   /* Utility */
   --color-outline:         #767575;
   --color-outline-variant: #484848;
-  --color-error:           #ff716c;
-  --color-error-container: #9f0519;
+  --color-error:                #ff716c;
+  --color-error-container:      #9f0519;
+  --color-on-error-container:   #ffa8a3;
 
   /* Typography */
   --font-display: 'Lexend', sans-serif;
