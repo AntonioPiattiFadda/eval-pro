@@ -38,17 +38,14 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <NavLink
-                      to={item.url}
-                      className={({ isActive }) =>
-                        isActive ? 'text-sidebar-primary' : ''
-                      }
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
+                  <NavLink to={item.url}>
+                    {({ isActive }) => (
+                      <SidebarMenuButton isActive={isActive} tooltip={item.title}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    )}
+                  </NavLink>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -59,17 +56,14 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings">
-              <NavLink
-                to="/settings"
-                className={({ isActive }) =>
-                  isActive ? 'text-sidebar-primary' : ''
-                }
-              >
-                <Settings />
-                <span>Settings</span>
-              </NavLink>
-            </SidebarMenuButton>
+            <NavLink to="/settings">
+              {({ isActive }) => (
+                <SidebarMenuButton isActive={isActive} tooltip="Configuración">
+                  <Settings />
+                  <span>Configuración</span>
+                </SidebarMenuButton>
+              )}
+            </NavLink>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
