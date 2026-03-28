@@ -8,7 +8,7 @@ export function ProfesionalLayout() {
 
   if (loading) return <div className="min-h-screen bg-background" />
   if (!user) return <Navigate to="/login" replace />
-  if (profile?.role !== 'PROFESSIONAL') return <Navigate to="/client/dashboard" replace />
+  if (!profile?.role || !['PROFESSIONAL', 'ADMIN'].includes(profile.role)) return <Navigate to="/patient/dashboard" replace />
 
   return (
     <SidebarProvider>

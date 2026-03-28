@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/sidebar'
 
 const navItems = [
-  { title: 'Agenda', url: '/profesional/agenda', icon: Calendar },
-  { title: 'Pacientes', url: '/profesional/pacientes', icon: Users },
+  { title: 'Agenda', url: '/professional/agenda', icon: Calendar },
+  { title: 'Pacientes', url: '/professional/pacientes', icon: Users },
 ]
 
 export function AppSidebar() {
