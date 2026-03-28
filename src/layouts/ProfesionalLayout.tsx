@@ -1,32 +1,35 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/AppSidebar'
 
 export function ProfesionalLayout() {
   const { user, profile, loading, signOut } = useAuth()
 
   if (loading) return <div className="min-h-screen bg-background" />
   if (!user) return <Navigate to="/login" replace />
-  // profile is null only when AuthContext is signing out after a fetch error — !user guard above handles it.
-  // This check fires for authenticated users whose role is not 'profesional' (i.e., 'client').
-  if (profile?.role !== 'profesional') return <Navigate to="/client/dashboard" replace />
+  if (profile?.role !== 'PROFESSIONAL') return <Navigate to="/client/dashboard" replace />
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="h-14 border-b border-outline-variant flex items-center justify-between px-6 bg-surface-container-low">
-        <span className="text-primary font-display font-semibold text-lg tracking-tight">EvalPro</span>
-        <div className="flex items-center gap-4">
-          <span className="text-on-surface-variant text-sm">{user.email}</span>
-          <button
-            onClick={signOut}
-            className="text-on-surface-variant text-sm hover:text-on-surface transition-colors"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
-      <main className="flex-1">
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <div className="flex flex-col flex-1 min-h-screen overflow-hidden">
+        <header className="h-14 border-b border-outline-variant flex items-center justify-between px-4 bg-surface-container-low shrink-0">
+          <SidebarTrigger />
+          <div className="flex items-center gap-4">
+            <span className="text-on-surface-variant text-sm">{user.email}</span>
+            <button
+              onClick={signOut}
+              className="text-on-surface-variant text-sm hover:text-on-surface transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </header>
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
