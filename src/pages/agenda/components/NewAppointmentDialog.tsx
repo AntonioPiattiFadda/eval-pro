@@ -46,13 +46,13 @@ export function NewAppointmentDialog({ professionalId, defaultDate, trigger }: P
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  const defaultDateStr = defaultDate
-    ? defaultDate.toISOString().split('T')[0]
-    : ''
-
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { date: defaultDateStr, startTime: '', endTime: '' },
+    defaultValues: {
+      date: defaultDate ? defaultDate.toISOString().split('T')[0] : '',
+      startTime: '',
+      endTime: '',
+    },
   })
 
   const handleClose = () => {
@@ -60,18 +60,19 @@ export function NewAppointmentDialog({ professionalId, defaultDate, trigger }: P
     setSelectedPatient(null)
     setShowNewPatient(false)
     setPatientError(false)
-    reset({ date: defaultDateStr, startTime: '', endTime: '' })
+    const dateStr = defaultDate ? defaultDate.toISOString().split('T')[0] : ''
+    reset({ date: dateStr, startTime: '', endTime: '' })
   }
 
   const toastId = 'create-appointment'
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: FormValues) => {
+    mutationFn: ({ values, patient }: { values: FormValues; patient: Patient }) => {
       const start_at = new Date(`${values.date}T${values.startTime}`).toISOString()
       const end_at = new Date(`${values.date}T${values.endTime}`).toISOString()
       return createAppointment({
         professional_id: professionalId,
-        patient_id: selectedPatient!.patient_id,
+        patient_id: patient.patient_id,
         start_at,
         end_at,
         booked_by: user!.id,
@@ -89,7 +90,7 @@ export function NewAppointmentDialog({ professionalId, defaultDate, trigger }: P
   const onSubmit = (values: FormValues) => {
     if (!selectedPatient) { setPatientError(true); return }
     setPatientError(false)
-    mutate(values)
+    mutate({ values, patient: selectedPatient })
   }
 
   return (
@@ -129,7 +130,7 @@ export function NewAppointmentDialog({ professionalId, defaultDate, trigger }: P
             ) : (
               <PatientSelector
                 selectedPatient={selectedPatient}
-                onSelect={(p) => { setSelectedPatient(p as Patient | null); setPatientError(false) }}
+                onSelect={(p) => { setSelectedPatient(p); setPatientError(false) }}
                 onNewPatient={() => setShowNewPatient(true)}
               />
             )}

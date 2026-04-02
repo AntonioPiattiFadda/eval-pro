@@ -74,7 +74,7 @@ export function NewPatientSubStep({ onSelect, onBack }: Props) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleEmailSearch()}
+              onKeyDown={(e) => e.key === 'Enter' && !lookingUp && handleEmailSearch()}
               placeholder="email@ejemplo.com"
               autoFocus
             />

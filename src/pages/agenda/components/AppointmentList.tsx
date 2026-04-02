@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import { Clock, User } from 'lucide-react'
-import { getAppointmentsForProfessional } from '../services/appointments.service'
+import { getAppointmentsForProfessional, type Appointment } from '../services/appointments.service'
 
-const STATUS_LABELS: Record<string, string> = {
+const STATUS_LABELS: Record<Appointment['status'], string> = {
   PENDING: 'Pendiente',
   CONFIRMED: 'Confirmado',
   CANCELLED: 'Cancelado',
   COMPLETED: 'Completado',
 }
 
-const STATUS_COLORS: Record<string, string> = {
+const STATUS_COLORS: Record<Appointment['status'], string> = {
   PENDING: 'text-yellow-400',
   CONFIRMED: 'text-green-400',
   CANCELLED: 'text-destructive',
@@ -63,8 +63,8 @@ export function AppointmentList({ professionalId }: Props) {
                 {dateStr} · {startStr} – {endStr}
               </div>
             </div>
-            <span className={`text-xs font-medium ${STATUS_COLORS[appt.status] ?? 'text-muted-foreground'}`}>
-              {STATUS_LABELS[appt.status] ?? appt.status}
+            <span className={`text-xs font-medium ${STATUS_COLORS[appt.status]}`}>
+              {STATUS_LABELS[appt.status]}
             </span>
           </div>
         )
