@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm list:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find /mnt/c/Users/anton/Documents/programacion/eval-pro-frontend/.worktrees/login/node_modules/shadcn -type f -name *.json)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__get_advisors",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__generate_typescript_types",
+      "Bash(find /mnt/c/Users/anton/Documents/programacion/pediclick/pediclick-frontend -name .env* -o -name vite.config*)",
+      "Bash(npm run:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

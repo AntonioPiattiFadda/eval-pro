@@ -25,4 +25,8 @@ dist-ssr
 
 
 .env
+.mcp.json
+
+
 .worktrees
+src/debugging-components

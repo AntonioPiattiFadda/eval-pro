@@ -18,9 +18,10 @@ const STATUS_COLORS: Record<Appointment['status'], string> = {
 
 interface Props {
   professionalId: string
+  onAppointmentClick?: (appointment: Appointment) => void
 }
 
-export function AppointmentList({ professionalId }: Props) {
+export function AppointmentList({ professionalId, onAppointmentClick }: Props) {
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['appointments', professionalId],
     queryFn: () => getAppointmentsForProfessional(professionalId),
@@ -51,12 +52,13 @@ export function AppointmentList({ professionalId }: Props) {
         return (
           <div
             key={appt.appointment_id}
-            className="flex items-center gap-4 px-4 py-3 rounded-xl bg-surface-container border border-outline-variant"
+            className="flex items-center gap-4 px-4 py-3 rounded-xl bg-surface-container border border-outline-variant cursor-pointer select-none"
+            onDoubleClick={() => appt.patient_id && onAppointmentClick?.(appt)}
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                 <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                <span className="truncate">{appt.patient?.full_name ?? 'Paciente sin nombre'}</span>
+                <span className="truncate">{appt.patient?.user.full_name ?? 'Paciente sin nombre'}</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                 <Clock className="h-3 w-3" />

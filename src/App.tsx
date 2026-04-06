@@ -1,70 +1,104 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from './components/ui/sonner'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { useUserSession } from './hooks/useUserSession'
+import { LoadingScreen } from './components/ui/LoadingScreen'
+import { ROLE_DASHBOARD } from './hooks/useActiveRole'
 import { AuthLayout } from './layouts/AuthLayout'
-import { ClientLayout } from './layouts/ClientLayout'
+import { PatientLayout } from './layouts/PatientLayout'
 import { ProfesionalLayout } from './layouts/ProfesionalLayout'
-import { ClientDashboard } from './pages/ClientDashboard'
-import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
-import { LoginPage } from './pages/LoginPage'
-import { ProfesionalDashboard } from './pages/ProfesionalDashboard'
-import { RegisterPage } from './pages/RegisterPage'
-import { ResetPasswordPage } from './pages/ResetPasswordPage'
-import { AgendaPage } from './pages/AgendaPage'
-import { PacientesPage } from './pages/PacientesPage'
-import { SettingsPage } from './pages/SettingsPage'
+import { PatientDashboard } from './pages/patient/PatientDashboard'
+import { AppointmentsPage } from './pages/patient/appointments/AppointmentsPage'
+import { PlansPage } from './pages/patient/plans/PlansPage'
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
+import { LoginPage } from './pages/auth/LoginPage'
+import { ProfessionalDashboard } from './pages/professional/ProfessionalDashboard'
+import { RegisterPage } from './pages/auth/RegisterPage'
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
+import { AgendaPage } from './pages/agenda/AgendaPage'
+import { PatientsPage } from './pages/patients/PatientsPage'
+import { PatientDetailPage } from './pages/patient-detail/PatientDetailPage'
+import { SessionPage } from './pages/sessions/SessionPage'
+import { AnamnesisPhase1Page } from './pages/sessions/AnamnesisPhase1Page'
+import { SettingsPage } from './pages/settings/SettingsPage'
+import { OrganizationsPage } from './pages/organizations/OrganizationsPage'
 import { PublicRoutesAuthCheck } from './pages/auth/components/PublicRoutesAuthCheck'
 import { RequireAuth } from './pages/auth/components/RequireAuth'
 import { RoleAuth } from './pages/auth/components/RoleAuth'
+import { DebugDeleteUser } from './debugging-components/DebugDeleteUser'
+
+const queryClient = new QueryClient()
 
 function RootRedirect() {
-  const { user, profile, loading } = useAuth()
+  const { lookingForSession, userSession } = useUserSession()
+  const { loading, activeRole } = useAuth()
 
-  if (loading) return <div className="min-h-screen bg-background" />
-  if (!user) return <Navigate to="/login" replace />
-  if (profile?.role === 'PROFESSIONAL' || profile?.role === 'ADMIN') return <Navigate to="/professional/dashboard" replace />
-  if (profile?.role === 'PATIENT') return <Navigate to="/patient/dashboard" replace />
-  return <Navigate to="/login" replace />
+  if (lookingForSession || loading) return <LoadingScreen />
+  if (!userSession) return <Navigate to="/login" replace />
+  if (activeRole) return <Navigate to={ROLE_DASHBOARD[activeRole]} replace />
+  return <LoadingScreen />
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <DebugDeleteUser />
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
 
-          {/* Public routes — redirect to dashboard if already logged in */}
-          <Route element={<PublicRoutesAuthCheck />}>
+            {/* Public routes — redirect to dashboard if already logged in */}
+            <Route element={<PublicRoutesAuthCheck />}>
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              </Route>
+            </Route>
+
+            {/* Reset password — always accessible, recovery token may create a session */}
             <Route element={<AuthLayout />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Route>
-          </Route>
 
-          {/* Protected routes */}
-          <Route element={<RequireAuth />}>
-            {/* Professional & Admin */}
-            <Route element={<RoleAuth allowedRoles={['PROFESSIONAL', 'ADMIN']} redirectTo="/patient/dashboard" />}>
-              <Route element={<ProfesionalLayout />}>
-                <Route path="/professional/dashboard" element={<ProfesionalDashboard />} />
-                <Route path="/professional/agenda" element={<AgendaPage />} />
-                <Route path="/professional/pacientes" element={<PacientesPage />} />
+            {/* Protected routes */}
+            <Route element={<RequireAuth />}>
+              {/* Admin only */}
+              <Route element={<RoleAuth allowedRoles={['ADMIN', 'SUPERADMIN']} redirectTo="/professional/dashboard" />}>
+                <Route element={<ProfesionalLayout />}>
+                  <Route path="/admin/organizations" element={<OrganizationsPage />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Patient */}
-            <Route element={<RoleAuth allowedRoles={['PATIENT']} redirectTo="/professional/dashboard" />}>
-              <Route element={<ClientLayout />}>
-                <Route path="/patient/dashboard" element={<ClientDashboard />} />
+              {/* Professional & Admin */}
+              <Route element={<RoleAuth allowedRoles={['PROFESSIONAL', 'ADMIN', 'SUPERADMIN']} redirectTo="/patient/dashboard" />}>
+                <Route element={<ProfesionalLayout />}>
+                  <Route path="/professional/dashboard" element={<ProfessionalDashboard />} />
+                  <Route path="/professional/agenda" element={<AgendaPage />} />
+                  <Route path="/professional/patients" element={<PatientsPage />} />
+                  <Route path="/professional/patients/:patientId" element={<PatientDetailPage />} />
+                  <Route path="/professional/sessions/:sessionId" element={<SessionPage />} />
+                  <Route path="/professional/sessions/:sessionId/anamnesis-fase1" element={<AnamnesisPhase1Page />} />
+                </Route>
               </Route>
-            </Route>
 
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+              {/* Patient */}
+              <Route element={<RoleAuth allowedRoles={['PATIENT']} redirectTo="/professional/dashboard" />}>
+                <Route element={<PatientLayout />}>
+                  <Route path="/patient/dashboard" element={<PatientDashboard />} />
+                  <Route path="/patient/appointments" element={<AppointmentsPage />} />
+                  <Route path="/patient/plans" element={<PlansPage />} />
+                </Route>
+              </Route>
+
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }

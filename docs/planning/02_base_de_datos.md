@@ -2,108 +2,168 @@
 
 ## Resumen
 
-31 tablas organizadas en 9 categorías funcionales.
+35 tablas organizadas en 10 categorías funcionales.
+
+> **Convención:** nombres de tablas y columnas en inglés. Enums en SCREAMING_SNAKE_CASE.
+
+---
+
+## Estado de implementación
+
+| Símbolo | Significado |
+|---|---|
+| ✅ | Creada en Supabase |
+| 🔲 | Pendiente |
+
+---
+
+## 2.0 Tablas de Usuarios y Roles
+
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 1 | **users** | Identidad de la persona: user_id (FK→auth.users), email, full_name, identification_number, organization_id, created_at | ✅ |
+| 2 | **user_roles** | Multi-rol por usuario. PK compuesta (user_id, role). Enum USER_ROLE: PROFESSIONAL \| PATIENT \| ADMIN \| SUPERADMIN | ✅ |
+| 3 | **professionals** | Perfil profesional. Vinculado a users. Enum SPECIALTY: KINESIOLOGY \| NUTRITION. UNIQUE (user_id, specialty) — un user puede tener múltiples especialidades | ✅ |
+| 4 | **patients** | Perfil paciente por organización. user_id NOT NULL (FK→users). Una persona puede ser paciente en múltiples orgs — cada org genera su propia fila. | ✅ |
+
+> **Decisión de diseño — identidad vs. perfiles:**
+> `users` representa a la **persona física**: un registro por persona, con su identidad (nombre, email, DNI). `patients` y `professionals` son **perfiles de rol** — una persona puede tener múltiples `patients` rows (una por organización) y múltiples `professionals` rows (una por especialidad/org). `users` no tiene columna `role`; los roles viven en `user_roles`.
+>
+> **Decisión de diseño — auth compartido entre organizaciones:**
+> La plataforma es multi-tenant con auth compartido. Un mismo paciente que es atendido en dos clínicas distintas tiene **una sola cuenta** (`users` / `auth.users`) pero dos filas en `patients` (una por org). Cada org opera como sistema independiente (branding propio, datos aislados por RLS), pero el login es el mismo. Este tradeoff se acepta porque: (a) el paciente raramente sabe que ambas clínicas usan el mismo sistema, (b) la experiencia está aislada por subdominio/branding, (c) la alternativa (un Supabase project por org) tiene costo operacional prohibitivo.
+>
+> **Alta de pacientes:** se realiza vía Edge Function `invite-patient` que usa el service role key server-side. Flujo: busca si el email ya existe en `users` → si no existe, llama a `auth.admin.inviteUserByEmail` y crea el registro en `users` manualmente (no hay trigger automático) → crea la fila en `patients` para la org. El paciente recibe un email para activar su cuenta y setear su contraseña.
 
 ---
 
 ## 2.1 Tablas Core
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 1 | **Dominios** | Kinesiología, nutrición, psicología, entrenamiento |
-| 2 | **Regiones** | Cervical, hombro, codo, muñeca, lumbar, cadera, rodilla, tobillo, etc. |
-| 3 | **Pacientes** | Datos personales y antecedentes |
-| 4 | **Evaluaciones** | Sesión de evaluación (multi-dominio, multi-región, objetivo) |
-| 5 | **Objetivos** | Rehabilitación, rendimiento, estético, salud general, pérdida de peso |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 5 | **domains** | Catálogo: KINESIOLOGY, NUTRITION, PSYCHOLOGY, TRAINING. Seeded. | ✅ |
+| 6 | **regions** | Catálogo: CERVICAL, SHOULDER, ELBOW, WRIST, LUMBAR, HIP, KNEE, ANKLE. Seeded. | ✅ |
+| 7 | **sessions** | Contacto clínico entre profesional y paciente. FK a patient, professional, region, domain, objective. | ✅ |
+| 8 | **objectives** | Catálogo: REHABILITATION, SPORTS_PERFORMANCE, AESTHETIC, GENERAL_HEALTH, WEIGHT_LOSS. Seeded. | ✅ |
+
+> **Decisión de diseño:** una `session` por dominio. Si el scoring de kinesiología detecta que hay que evaluar nutrición, se crea una nueva `session` y la relación se registra en `session_derivations`. Cada dominio tiene su propio flujo completo.
+
+---
 
 ## 2.2 Tablas de Anamnesis
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 6 | **Preguntas_Fase1** | 4 preguntas generales + región. Opciones de respuesta cerradas |
-| 7 | **Preguntas_Fase2** | Preguntas específicas por estructura. Campo `activa_si` = combo de Fase 1 |
-| 8 | **Respuestas_Anamnesis** | Respuestas del paciente por evaluación, vinculadas a Fase 1 y 2 |
-| 9 | **Perfil_Estructura** | Clasificación resultante: tendón / músculo / ligamento / hueso |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 9 | **anamnesis_phase1_questions** | 4 preguntas generales. Opciones de respuesta cerradas. Seeded. | ✅ |
+| 10 | **anamnesis_phase2_questions** | Preguntas específicas por estructura. Campo `active_if` = STRUCTURE_TYPE enum | ✅ |
+| 11 | **anamnesis_answers** | Respuestas del paciente por sesión, cubre Fase 1 y 2. UNIQUE (session_id, question_id) | ✅ |
+| 12 | **anamnesis_structure_profiles** | Clasificación inferida por el sistema: TENDON / MUSCLE / LIGAMENT / BONE. UNIQUE por sesión | ✅ |
+
+---
 
 ## 2.3 Tablas de Tests y Hallazgos
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 10 | **Tests** | Catálogo de pruebas por dominio, región y estructura asociada |
-| 11 | **Resultados_Test** | Resultado de cada test en una evaluación + score |
-| 12 | **Signos_Sintomas** | Catálogo de hallazgos clínicos por dominio |
-| 13 | **Evaluacion_Signos** | Signos registrados por evaluación con severidad |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 13 | **tests** | Catálogo de pruebas por dominio, región y estructura asociada | 🔲 |
+| 14 | **test_results** | Resultado de cada test en una evaluación + score | 🔲 |
+| 15 | **signs_symptoms** | Catálogo de hallazgos clínicos por dominio | 🔲 |
+| 16 | **evaluation_signs** | Signos registrados por evaluación con severidad | 🔲 |
+
+---
 
 ## 2.4 Tablas de Estudios Complementarios
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 14 | **Estudios_Complementarios** | Catálogo: Rx, Eco, RMN, TAC, labs |
-| 15 | **Resultados_Estudio** | Hallazgos por estudio, con estado (solicitado/pendiente/cargado/vencido) y fecha |
-| 16 | **Sugerencia_Estudio** | Reglas: qué estudio sugerir según scoring actual |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 17 | **complementary_studies** | Catálogo: Rx, Eco, RMN, TAC, labs | 🔲 |
+| 18 | **study_results** | Hallazgos por estudio, con estado (REQUESTED/PENDING/LOADED/EXPIRED) y fecha | 🔲 |
+| 19 | **study_suggestions** | Reglas: qué estudio sugerir según scoring actual | 🔲 |
+
+---
 
 ## 2.5 Tablas de Diagnósticos e Intervenciones
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 17 | **Diagnosticos** | Catálogo por dominio y región |
-| 18 | **Intervenciones** | Catálogo de tratamientos/acciones por dominio |
-| 19 | **Diagnostico_Intervencion** | Relación diagnóstico → intervenciones con prioridad |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 20 | **diagnoses** | Catálogo por dominio y región | 🔲 |
+| 21 | **interventions** | Catálogo de tratamientos/acciones por dominio | 🔲 |
+| 22 | **diagnosis_interventions** | Relación diagnóstico → intervenciones con prioridad | 🔲 |
+
+---
 
 ## 2.6 Tablas del Motor de Scoring
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 20 | **Reglas_Scoring** | Tabla unificada: fuente (fase1/fase2/test/estudio) → patología → peso |
-| 21 | **Evidencia_Test** | Sensibilidad, especificidad por test/patología (Capa 2 Bayesiana) |
-| 22 | **Prevalencia** | Probabilidad pretest por patología y contexto |
-| 23 | **Clusters** | Combinaciones de tests con bonus de especificidad |
-| 24 | **Diagnostico_Sugerido** | Resultado del scoring por evaluación con % y desglose por fase |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 23 | **scoring_rules** | Tabla unificada: fuente (phase1/phase2/test/study) → diagnóstico → peso | 🔲 |
+| 24 | **test_evidence** | Sensibilidad, especificidad por test/diagnóstico (Capa 2 Bayesiana) | 🔲 |
+| 25 | **prevalence** | Probabilidad pretest por diagnóstico y contexto | 🔲 |
+| 26 | **clusters** | Combinaciones de tests con bonus de especificidad | 🔲 |
+| 27 | **suggested_diagnoses** | Resultado del scoring por evaluación con % y desglose por fase | 🔲 |
+
+---
 
 ## 2.7 Tablas del Sistema Regional
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 25 | **Patologia_Region** | Regiones de origen y referido por patología |
-| 26 | **Cadenas_Regionales** | Conexiones biomecánicas/neurológicas entre regiones |
-| 27 | **Derivacion_Regional** | Reglas de sugerencia de nueva región cuando score local es bajo |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 28 | **pathology_regions** | Regiones de origen y referido por diagnóstico | 🔲 |
+| 29 | **regional_chains** | Conexiones biomecánicas/neurológicas entre regiones | 🔲 |
+| 30 | **regional_referrals** | Reglas de sugerencia de nueva región cuando score local es bajo | 🔲 |
+
+---
 
 ## 2.8 Tablas de Seguridad
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 28 | **Banderas_Rojas** | Hallazgos de alarma con acción y prioridad, por dominio |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 31 | **red_flags** | Hallazgos de alarma con acción y prioridad, por dominio | 🔲 |
+
+---
 
 ## 2.9 Tablas de Evolución y Derivación
 
-| # | Tabla | Descripción |
-|---|---|---|
-| 29 | **Evaluacion_Evolucion** | Tracking de progreso entre sesiones (delta score, EVA, ROM, funcional) |
-| 30 | **Reglas_Derivacion_Interdominio** | Cuándo sugerir otro dominio basado en evolución o hallazgos |
-| 31 | **Objetivo_Dominio** | Dominios obligatorios/recomendados por objetivo del paciente |
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 32 | **evaluation_evolutions** | Tracking de progreso entre sesiones (delta score, EVA, ROM, funcional) | 🔲 |
+| 33 | **interdomain_referral_rules** | Cuándo sugerir otro dominio basado en evolución o hallazgos | 🔲 |
+| 34 | **objective_domains** | Dominios obligatorios/recomendados por objetivo del paciente | 🔲 |
+
+---
+
+## 2.10 Tablas de Organizaciones
+
+| # | Tabla | Descripción | Estado |
+|---|---|---|---|
+| 35 | **organizations** | Clínicas u organizaciones. FK en users. | ✅ |
 
 ---
 
 ## Diagrama de Relaciones (simplificado)
 
 ```
-Pacientes ──→ Evaluaciones ──→ Resultados_Test ──→ Reglas_Scoring ──→ Diagnostico_Sugerido
-                   │                                      ↑                      ↓
-                   ├──→ Respuestas_Anamnesis ─────────────┤          Diagnostico_Intervencion
-                   │         ↓                            │                      ↓
-                   │    Perfil_Estructura ──→ Tests        │              Intervenciones
-                   │                          (filtro)     │
-                   ├──→ Evaluacion_Signos ────────────────┤
-                   │                                      │
-                   ├──→ Resultados_Estudio ───────────────┘
-                   │
-                   ├──→ Banderas_Rojas (check prioritario)
-                   │
-                   └──→ Evaluacion_Evolucion (tracking entre sesiones)
+auth.users
+    ↓
+users ──→ user_roles
+    ├──→ professionals ──→ evaluations ──→ anamnesis_answers ──→ scoring_rules ──→ suggested_diagnoses
+    │                           │                                      ↑                    ↓
+    └──→ patients ──────────────┤          test_results ───────────────┤       diagnosis_interventions
+                                │               ↓                      │                    ↓
+                                │          structure_profiles → tests  │              interventions
+                                │          (filtro por región+estructura)
+                                │
+                                ├──→ evaluation_signs ─────────────────┤
+                                │
+                                ├──→ study_results ────────────────────┘
+                                │
+                                ├──→ red_flags (check prioritario)
+                                │
+                                └──→ evaluation_evolutions (tracking entre sesiones)
 
-Patologia_Region ←──→ Cadenas_Regionales ──→ Derivacion_Regional
-Objetivo_Dominio ──→ Reglas_Derivacion_Interdominio
-Evidencia_Test + Prevalencia + Clusters ──→ Motor Bayesiano (Capa 2)
+evaluations.parent_evaluation_id → evaluations (derivación interdominio)
+regional_chains ──→ regional_referrals
+objective_domains ──→ interdomain_referral_rules
+test_evidence + prevalence + clusters ──→ Motor Bayesiano (Capa 2)
 ```
 
 ---

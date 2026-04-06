@@ -1,112 +1,81 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import type { User, AuthError } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
-
-interface Profile {
-  role: 'profesional' | 'client'
-}
+import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { supabase } from '@/service'
+import { getUserProfile } from '@/service/profiles'
+import type { User, UserRole } from '@/types/users.types'
+import { signOut as authSignOut } from '@/service/auth'
+import { useActiveRole } from '@/hooks/useActiveRole'
 
 interface AuthContextValue {
-  user: User | null
-  profile: Profile | null
+  user: SupabaseUser | null
+  profile: User | null
   loading: boolean
-  signInWithEmail: (email: string, password: string) => Promise<AuthError | null>
-  signInWithGoogle: () => Promise<AuthError | null>
-  signInWithApple: () => Promise<AuthError | null>
+  activeRole: UserRole | null
+  setActiveRole: (role: UserRole) => void
   signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [profile, setProfile] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // Cold start timeout: if INITIAL_SESSION never fires (offline, misconfigured client),
-    // unblock the UI after 10s showing the login screen instead of a permanent blank.
-    const timeout = setTimeout(() => {
-      setUser(null)
-      setProfile(null)
-      setLoading(false)
-    }, 10000)
+  const { activeRole, setActiveRole } = useActiveRole(profile?.roles ?? [])
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      clearTimeout(timeout)
+  useEffect(() => {
+    const loadSession = async () => {
+      console.log('[auth] loadSession — checking session...')
+      const { data: { session } } = await supabase.auth.getSession()
 
       if (session?.user) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .single()
-
-        if (error || !data || !['profesional', 'client'].includes(data.role)) {
-          // Profile fetch failed or unknown role — unblock UI immediately, then sign out.
-          // Do NOT rely on the subsequent onAuthStateChange null-session to clear state:
-          // that re-entry is asynchronous and the UI must unblock now.
-          console.error('[AuthContext] Profile fetch failed:', error)
-          setUser(null)
-          setProfile(null)
-          setLoading(false)
-          await supabase.auth.signOut()
-          return
+        console.log('[auth] loadSession — session found, user id:', session.user.id)
+        const userProfile = await getUserProfile(session.user.id)
+        if (userProfile) {
+          console.log('[auth] loadSession — profile loaded, roles:', userProfile.roles)
+          setUser(session.user)
+          setProfile(userProfile)
+        } else {
+          console.warn('[auth] loadSession — session exists but no profile found for user:', session.user.id)
         }
-
-        setUser(session.user)
-        setProfile({ role: data.role as 'profesional' | 'client' })
-        setLoading(false)
       } else {
-        // Covers: logout, session expiry, signOut call, cold start with no session.
-        // Explicit null assignment prevents stale role state after logout.
-        setUser(null)
-        setProfile(null)
-        setLoading(false)
+        console.log('[auth] loadSession — no active session')
       }
-    })
 
-    return () => {
-      clearTimeout(timeout)
-      subscription.unsubscribe()
+      setLoading(false)
     }
+
+    loadSession()
   }, [])
 
-  async function signInWithEmail(email: string, password: string): Promise<AuthError | null> {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return error
-  }
-
-  async function signInWithGoogle(): Promise<AuthError | null> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/login` },
-    })
-    return error
-  }
-
-  async function signInWithApple(): Promise<AuthError | null> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: { redirectTo: `${window.location.origin}/login` },
-    })
-    return error
-  }
-
-  async function signOut(): Promise<void> {
-    await supabase.auth.signOut()
-    // onAuthStateChange null-session handler sets user/profile to null
+  const handleSignOut = async () => {
+    console.log('[auth] signOut')
+    await authSignOut()
+    setUser(null)
+    setProfile(null)
+    window.location.href = '/login'
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithEmail, signInWithGoogle, signInWithApple, signOut }}>
+    <AuthContext.Provider value={{
+      user,
+      profile,
+      loading,
+      activeRole,
+      setActiveRole,
+      signOut: handleSignOut,
+    }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
   return ctx
 }
+
+export type { UserRole }

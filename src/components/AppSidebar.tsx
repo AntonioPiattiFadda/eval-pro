@@ -1,4 +1,4 @@
-import { Calendar, Users, Settings } from 'lucide-react'
+import { Calendar, Users, Settings, Building2 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import {
   Sidebar,
@@ -6,18 +6,27 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useAuth } from '@/contexts/AuthContext'
 
-const navItems = [
+const professionalNavItems = [
   { title: 'Agenda', url: '/professional/agenda', icon: Calendar },
-  { title: 'Pacientes', url: '/professional/pacientes', icon: Users },
+  { title: 'Pacientes', url: '/professional/patients', icon: Users },
+]
+
+const adminNavItems = [
+  { title: 'Organización', url: '/admin/organizations', icon: Building2 },
 ]
 
 export function AppSidebar() {
+  const { activeRole } = useAuth()
+  const isAdmin = activeRole === 'ADMIN' || activeRole === 'SUPERADMIN'
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -36,7 +45,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {professionalNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <NavLink to={item.url}>
                     {({ isActive }) => (
@@ -51,6 +60,28 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Administración</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminNavItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <NavLink to={item.url}>
+                      {({ isActive }) => (
+                        <SidebarMenuButton isActive={isActive} tooltip={item.title}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      )}
+                    </NavLink>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
