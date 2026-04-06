@@ -36,6 +36,7 @@ function RootRedirect() {
   const { loading, activeRole } = useAuth()
 
   if (lookingForSession || loading) return <LoadingScreen />
+
   if (!userSession) return <Navigate to="/login" replace />
 
   if (activeRole) return <Navigate to={ROLE_DASHBOARD[activeRole]} replace />
