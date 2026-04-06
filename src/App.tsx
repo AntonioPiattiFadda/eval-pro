@@ -31,6 +31,7 @@ import { DebugDeleteUser } from './debugging-components/DebugDeleteUser'
 const queryClient = new QueryClient()
 
 function RootRedirect() {
+
   const { lookingForSession, userSession } = useUserSession()
   const { loading, activeRole } = useAuth()
 
