@@ -24,6 +24,11 @@ Go to your repository settings and navigate to **Actions > Variables**. Add the 
 
   - `SUPABASE_DB_URL`: Your Supabase PostgreSQL connection string. Format:  
     `postgresql://<USER>:<PASSWORD>@<HOST>:5432/postgres`
+    
+     ⚠️ Important (GitHub Actions / CI environments):
+Supabase direct database host (db.<project>.supabase.co:5432) may resolve to IPv6, which can fail in CI runners with errors like Network is unreachable.
+
+👉 You MUST use the IPv4-compatible connection pooling host instead.
 
 - **Variables:**
   - `BACKUP_ENABLED`: Set to `true` to enable backups or `false` to disable them.
