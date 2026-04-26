@@ -30,7 +30,6 @@ import { ExerciseBankPage } from './pages/superadmin/ExerciseBankPage'
 import { PublicRoutesAuthCheck } from './pages/auth/components/PublicRoutesAuthCheck'
 import { RequireAuth } from './pages/auth/components/RequireAuth'
 import { RoleAuth } from './pages/auth/components/RoleAuth'
-import { DebugDeleteUser } from './debugging-components/DebugDeleteUser'
 
 const queryClient = new QueryClient()
 
@@ -53,7 +52,6 @@ export default function App() {
       <BrowserRouter>
         <AuthProvider>
           <Toaster />
-          <DebugDeleteUser />
           <Routes>
             <Route path="/" element={<RootRedirect />} />
 
