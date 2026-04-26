@@ -4,7 +4,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict D9vke2Ecn5zkqLL8wndG9Tr16IIpwYhvBTbeFgDRjjZW5d6ZN6D2BLIvumeo8Co
+-- \restrict UxeOxHiljMf7EGEmTyRhheiNQRL7dsz5L6MOjO8ZUkrtFQkK2iqSG9sq42aW68S
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -50,8 +50,8 @@ COPY "auth"."flow_state" ("id", "user_id", "auth_code", "code_challenge_method",
 --
 
 COPY "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") FROM stdin;
+00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-11 12:35:20.025713+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-11 13:33:23.755531+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	9713d8a7-addb-42bd-948e-5015042e0b36	authenticated	authenticated	milibustosm10@gmail.com	$2a$10$Dp0QqKQ84SFxE9g9Q4adduSUkh7PrzBGS0ys1Dp7xec.mpqBJILUe	2026-04-04 19:46:29.953719+00	2026-04-04 19:46:17.218944+00		\N		\N			\N	2026-04-04 19:46:29.96828+00	{"provider": "email", "providers": ["email"]}	{"email_verified": true}	\N	2026-04-04 19:46:17.13427+00	2026-04-04 19:46:35.987625+00	\N	\N			\N		0	\N		\N	f	\N	f
-00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-06 02:40:20.94274+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-06 02:40:20.998376+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
 
@@ -88,6 +88,7 @@ COPY "auth"."oauth_clients" ("id", "client_secret_hash", "registration_type", "r
 COPY "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id", "aal", "not_after", "refreshed_at", "user_agent", "ip", "tag", "oauth_client_id", "refresh_token_hmac_key", "refresh_token_counter", "scopes") FROM stdin;
 573c4557-2ee7-463f-98a4-e21c66b0e2ec	9713d8a7-addb-42bd-948e-5015042e0b36	2026-04-04 19:46:29.968366+00	2026-04-04 19:46:29.968366+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
 033c704a-34e9-445e-bb59-10bc650245b4	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-06 02:40:20.944892+00	2026-04-06 02:40:20.944892+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
+b7e72150-76b5-4f25-8e0e-943cd16317cc	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-11 12:35:20.02581+00	2026-04-11 13:33:23.763232+00	\N	aal1	\N	2026-04-11 13:33:23.763143	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
 \.
 
 
@@ -98,6 +99,7 @@ COPY "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id"
 COPY "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "authentication_method", "id") FROM stdin;
 573c4557-2ee7-463f-98a4-e21c66b0e2ec	2026-04-04 19:46:30.015061+00	2026-04-04 19:46:30.015061+00	otp	cae5c561-8b54-47e6-9bd4-608997cb3807
 033c704a-34e9-445e-bb59-10bc650245b4	2026-04-06 02:40:20.999734+00	2026-04-06 02:40:20.999734+00	password	9222785a-6329-4815-887f-e0e4014f5b97
+b7e72150-76b5-4f25-8e0e-943cd16317cc	2026-04-11 12:35:20.066819+00	2026-04-11 12:35:20.066819+00	password	9f02020a-b303-4d82-bb8e-904b75d7af98
 \.
 
 
@@ -156,6 +158,8 @@ COPY "auth"."one_time_tokens" ("id", "user_id", "token_type", "token_hash", "rel
 COPY "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked", "created_at", "updated_at", "parent", "session_id") FROM stdin;
 00000000-0000-0000-0000-000000000000	52	4qca5xx2optu	9713d8a7-addb-42bd-948e-5015042e0b36	f	2026-04-04 19:46:29.983341+00	2026-04-04 19:46:29.983341+00	\N	573c4557-2ee7-463f-98a4-e21c66b0e2ec
 00000000-0000-0000-0000-000000000000	57	icv2j2ymceko	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-06 02:40:20.973685+00	2026-04-06 02:40:20.973685+00	\N	033c704a-34e9-445e-bb59-10bc650245b4
+00000000-0000-0000-0000-000000000000	58	z7l66zkspsz2	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-11 12:35:20.04437+00	2026-04-11 13:33:23.715225+00	\N	b7e72150-76b5-4f25-8e0e-943cd16317cc
+00000000-0000-0000-0000-000000000000	59	2jze5to6ijrr	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-11 13:33:23.739552+00	2026-04-11 13:33:23.739552+00	z7l66zkspsz2	b7e72150-76b5-4f25-8e0e-943cd16317cc
 \.
 
 
@@ -388,6 +392,62 @@ COPY "public"."session_derivations" ("derivation_id", "source_session_id", "deri
 
 
 --
+-- Data for Name: training_exercises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_exercises" ("exercise_id", "name", "description", "muscle_groups", "video_url", "execution_type", "default_tempo", "default_sets", "default_reps", "default_rest_seconds", "organization_id", "deleted_at", "created_at") FROM stdin;
+\.
+
+
+--
+-- Data for Name: training_plans; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_plans" ("plan_id", "name", "description", "patient_id", "organization_id", "professional_id", "start_date", "end_date", "deleted_at", "created_at") FROM stdin;
+1972e7cd-a0a9-4255-9cd2-50ca33730f59	Test	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-11	\N	\N	2026-04-11 13:00:43.368217+00
+\.
+
+
+--
+-- Data for Name: training_mesocycles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_mesocycles" ("mesocycle_id", "plan_id", "name", "order_index", "periodization_type", "deleted_at", "organization_id", "created_at") FROM stdin;
+0c9a969b-074f-4d9f-b8ea-85528ddbee7d	1972e7cd-a0a9-4255-9cd2-50ca33730f59	dbsrt	0	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:23:47.479864+00
+1cd2c887-5f1b-45b9-bff2-44a0360dfb32	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Fase aguda	1	BLOCK	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:51.505348+00
+\.
+
+
+--
+-- Data for Name: training_microcycles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_microcycles" ("microcycle_id", "mesocycle_id", "plan_id", "name", "order_index", "repeat_count", "duration_days", "deleted_at", "organization_id", "created_at") FROM stdin;
+2c031011-cb90-46e4-a602-781dae88fd77	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	mu	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:10.857426+00
+06068a5a-d00e-4c92-9464-ec07f9751683	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Semana de carga	1	1	15	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:18.405287+00
+\.
+
+
+--
+-- Data for Name: training_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_sessions" ("session_id", "microcycle_id", "mesocycle_id", "plan_id", "name", "day_of_week", "order_index", "deleted_at", "organization_id", "created_at") FROM stdin;
+5b7f7cfb-9676-4032-95a9-29338b303684	\N	1cd2c887-5f1b-45b9-bff2-44a0360dfb32	\N	payment_method	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:33:38.103615+00
+4b33b583-27d1-4503-b2d9-498e9ee3ea42	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D	{0}	1	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:18:04.370772+00
+a13b731d-94b6-47cf-9247-5438b49ef1cf	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D2	{1}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:42.847365+00
+\.
+
+
+--
+-- Data for Name: training_session_exercises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_session_exercises" ("session_exercise_id", "session_id", "exercise_id", "sets", "reps", "set_duration_seconds", "rep_duration_seconds", "load_value", "load_unit", "rest_seconds", "order_index", "group_label", "notes", "deleted_at", "organization_id", "created_at") FROM stdin;
+\.
+
+
+--
 -- Data for Name: user_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -468,13 +528,13 @@ COPY "storage"."vector_indexes" ("id", "name", "bucket_id", "data_type", "dimens
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 57, true);
+SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 59, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict D9vke2Ecn5zkqLL8wndG9Tr16IIpwYhvBTbeFgDRjjZW5d6ZN6D2BLIvumeo8Co
+-- \unrestrict UxeOxHiljMf7EGEmTyRhheiNQRL7dsz5L6MOjO8ZUkrtFQkK2iqSG9sq42aW68S
 
 RESET ALL;
