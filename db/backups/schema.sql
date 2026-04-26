@@ -17,13 +17,6 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 
 
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-
-
-
-
-
 CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
 
 
@@ -128,7 +121,8 @@ CREATE TYPE "public"."load_unit" AS ENUM (
     'KG',
     'PERCENTAGE_1RM',
     'RPE',
-    'NONE'
+    'NONE',
+    'PERCENTAGE_VELOCITY'
 );
 
 
@@ -245,89 +239,177 @@ CREATE OR REPLACE FUNCTION "public"."get_training_plan_tree"("p_plan_id" "uuid")
     WHERE tse.deleted_at IS NULL
     GROUP BY tse.session_id
   ),
+
   plan_sessions AS (
-    SELECT ts.session_id, ts.plan_id,
+    SELECT
+      ts.session_id,
+      ts.plan_id,
       jsonb_build_object(
-        'session_id',  ts.session_id, 'name', ts.name,
-        'day_of_week', ts.day_of_week, 'order_index', ts.order_index,
-        'exercises',   COALESCE(sea.exercises, '[]'::jsonb)
+        'session_id',   ts.session_id,
+        'name',         ts.name,
+        'day_of_week',  ts.day_of_week,
+        'order_index',  ts.order_index,
+        'is_active',    ts.is_active,
+        'exercises',    COALESCE(sea.exercises, '[]'::jsonb)
       ) AS session_json
     FROM training_sessions ts
     LEFT JOIN session_exercises_agg sea ON sea.session_id = ts.session_id
-    WHERE ts.plan_id = p_plan_id AND ts.microcycle_id IS NULL AND ts.mesocycle_id IS NULL AND ts.deleted_at IS NULL
+    WHERE ts.plan_id = p_plan_id
+      AND ts.microcycle_id IS NULL
+      AND ts.mesocycle_id  IS NULL
+      AND ts.deleted_at    IS NULL
   ),
+
   meso_sessions AS (
-    SELECT ts.session_id, ts.mesocycle_id,
+    SELECT
+      ts.session_id,
+      ts.mesocycle_id,
       jsonb_build_object(
-        'session_id',  ts.session_id, 'name', ts.name,
-        'day_of_week', ts.day_of_week, 'order_index', ts.order_index,
-        'exercises',   COALESCE(sea.exercises, '[]'::jsonb)
+        'session_id',   ts.session_id,
+        'name',         ts.name,
+        'day_of_week',  ts.day_of_week,
+        'order_index',  ts.order_index,
+        'is_active',    ts.is_active,
+        'exercises',    COALESCE(sea.exercises, '[]'::jsonb)
       ) AS session_json
     FROM training_sessions ts
     LEFT JOIN session_exercises_agg sea ON sea.session_id = ts.session_id
-    WHERE ts.microcycle_id IS NULL AND ts.mesocycle_id IS NOT NULL AND ts.deleted_at IS NULL
+    WHERE ts.microcycle_id IS NULL
+      AND ts.mesocycle_id  IS NOT NULL
+      AND ts.deleted_at    IS NULL
   ),
+
   micro_sessions AS (
-    SELECT ts.session_id, ts.microcycle_id,
+    SELECT
+      ts.session_id,
+      ts.microcycle_id,
       jsonb_build_object(
-        'session_id',  ts.session_id, 'name', ts.name,
-        'day_of_week', ts.day_of_week, 'order_index', ts.order_index,
-        'exercises',   COALESCE(sea.exercises, '[]'::jsonb)
+        'session_id',   ts.session_id,
+        'name',         ts.name,
+        'day_of_week',  ts.day_of_week,
+        'order_index',  ts.order_index,
+        'is_active',    ts.is_active,
+        'exercises',    COALESCE(sea.exercises, '[]'::jsonb)
       ) AS session_json
     FROM training_sessions ts
     LEFT JOIN session_exercises_agg sea ON sea.session_id = ts.session_id
-    WHERE ts.microcycle_id IS NOT NULL AND ts.deleted_at IS NULL
+    WHERE ts.microcycle_id IS NOT NULL
+      AND ts.deleted_at    IS NULL
   ),
+
   meso_microcycles AS (
-    SELECT tmi.mesocycle_id,
-      COALESCE(jsonb_agg(jsonb_build_object(
-        'microcycle_id', tmi.microcycle_id, 'name', tmi.name,
-        'order_index', tmi.order_index, 'repeat_count', tmi.repeat_count, 'duration_days', tmi.duration_days,
-        'sessions', COALESCE((SELECT jsonb_agg(ms.session_json ORDER BY (ms.session_json->>'order_index')::int)
-                              FROM micro_sessions ms WHERE ms.microcycle_id = tmi.microcycle_id), '[]'::jsonb)
-      ) ORDER BY tmi.order_index) FILTER (WHERE tmi.microcycle_id IS NOT NULL), '[]'::jsonb) AS microcycles
+    SELECT
+      tmi.mesocycle_id,
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'microcycle_id', tmi.microcycle_id,
+            'name',          tmi.name,
+            'order_index',   tmi.order_index,
+            'repeat_count',  tmi.repeat_count,
+            'duration_days', tmi.duration_days,
+            'is_active',     tmi.is_active,
+            'sessions',      COALESCE(
+              (SELECT jsonb_agg(ms.session_json ORDER BY (ms.session_json->>'order_index')::int)
+               FROM micro_sessions ms
+               WHERE ms.microcycle_id = tmi.microcycle_id),
+              '[]'::jsonb
+            )
+          ) ORDER BY tmi.order_index
+        ) FILTER (WHERE tmi.microcycle_id IS NOT NULL),
+        '[]'::jsonb
+      ) AS microcycles
     FROM training_microcycles tmi
-    WHERE tmi.mesocycle_id IS NOT NULL AND tmi.deleted_at IS NULL
+    WHERE tmi.mesocycle_id IS NOT NULL
+      AND tmi.deleted_at   IS NULL
     GROUP BY tmi.mesocycle_id
   ),
+
   plan_microcycles AS (
-    SELECT tmi.plan_id,
-      COALESCE(jsonb_agg(jsonb_build_object(
-        'microcycle_id', tmi.microcycle_id, 'name', tmi.name,
-        'order_index', tmi.order_index, 'repeat_count', tmi.repeat_count, 'duration_days', tmi.duration_days,
-        'sessions', COALESCE((SELECT jsonb_agg(ms.session_json ORDER BY (ms.session_json->>'order_index')::int)
-                              FROM micro_sessions ms WHERE ms.microcycle_id = tmi.microcycle_id), '[]'::jsonb)
-      ) ORDER BY tmi.order_index) FILTER (WHERE tmi.microcycle_id IS NOT NULL), '[]'::jsonb) AS microcycles
+    SELECT
+      tmi.plan_id,
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'microcycle_id', tmi.microcycle_id,
+            'name',          tmi.name,
+            'order_index',   tmi.order_index,
+            'repeat_count',  tmi.repeat_count,
+            'duration_days', tmi.duration_days,
+            'is_active',     tmi.is_active,
+            'sessions',      COALESCE(
+              (SELECT jsonb_agg(ms.session_json ORDER BY (ms.session_json->>'order_index')::int)
+               FROM micro_sessions ms
+               WHERE ms.microcycle_id = tmi.microcycle_id),
+              '[]'::jsonb
+            )
+          ) ORDER BY tmi.order_index
+        ) FILTER (WHERE tmi.microcycle_id IS NOT NULL),
+        '[]'::jsonb
+      ) AS microcycles
     FROM training_microcycles tmi
-    WHERE tmi.plan_id = p_plan_id AND tmi.mesocycle_id IS NULL AND tmi.deleted_at IS NULL
+    WHERE tmi.plan_id      = p_plan_id
+      AND tmi.mesocycle_id IS NULL
+      AND tmi.deleted_at   IS NULL
     GROUP BY tmi.plan_id
   ),
+
   plan_mesocycles AS (
-    SELECT tm.plan_id,
-      COALESCE(jsonb_agg(jsonb_build_object(
-        'mesocycle_id', tm.mesocycle_id, 'name', tm.name,
-        'order_index', tm.order_index, 'periodization_type', tm.periodization_type,
-        'sessions', COALESCE((SELECT jsonb_agg(s.session_json ORDER BY (s.session_json->>'order_index')::int)
-                              FROM meso_sessions s WHERE s.mesocycle_id = tm.mesocycle_id), '[]'::jsonb),
-        'microcycles', COALESCE((SELECT mm.microcycles FROM meso_microcycles mm WHERE mm.mesocycle_id = tm.mesocycle_id), '[]'::jsonb)
-      ) ORDER BY tm.order_index) FILTER (WHERE tm.mesocycle_id IS NOT NULL), '[]'::jsonb) AS mesocycles
+    SELECT
+      tm.plan_id,
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'mesocycle_id', tm.mesocycle_id,
+            'name',         tm.name,
+            'order_index',  tm.order_index,
+            'is_active',    tm.is_active,
+            'sessions',     COALESCE(
+              (SELECT jsonb_agg(s.session_json ORDER BY (s.session_json->>'order_index')::int)
+               FROM meso_sessions s
+               WHERE s.mesocycle_id = tm.mesocycle_id),
+              '[]'::jsonb
+            ),
+            'microcycles',  COALESCE(
+              (SELECT mm.microcycles FROM meso_microcycles mm WHERE mm.mesocycle_id = tm.mesocycle_id),
+              '[]'::jsonb
+            )
+          ) ORDER BY tm.order_index
+        ) FILTER (WHERE tm.mesocycle_id IS NOT NULL),
+        '[]'::jsonb
+      ) AS mesocycles
     FROM training_mesocycles tm
-    WHERE tm.plan_id = p_plan_id AND tm.deleted_at IS NULL
+    WHERE tm.plan_id    = p_plan_id
+      AND tm.deleted_at IS NULL
     GROUP BY tm.plan_id
   )
-  SELECT jsonb_build_object(
-    'plan_id',     tp.plan_id,
-    'name',        tp.name,
-    'description', tp.description,
-    'start_date',  tp.start_date,
-    'end_date',    tp.end_date,
-    'sessions',    COALESCE((SELECT jsonb_agg(ps.session_json ORDER BY (ps.session_json->>'order_index')::int)
-                             FROM plan_sessions ps WHERE ps.plan_id = tp.plan_id), '[]'::jsonb),
-    'mesocycles',  COALESCE((SELECT pm.mesocycles FROM plan_mesocycles pm WHERE pm.plan_id = tp.plan_id), '[]'::jsonb),
-    'microcycles', COALESCE((SELECT pmi.microcycles FROM plan_microcycles pmi WHERE pmi.plan_id = tp.plan_id), '[]'::jsonb)
-  )
+
+  SELECT
+    jsonb_build_object(
+      'plan_id',      tp.plan_id,
+      'name',         tp.name,
+      'description',  tp.description,
+      'start_date',   tp.start_date,
+      'end_date',     tp.end_date,
+      'is_active',    tp.is_active,
+      'sessions',     COALESCE(
+        (SELECT jsonb_agg(ps.session_json ORDER BY (ps.session_json->>'order_index')::int)
+         FROM plan_sessions ps
+         WHERE ps.plan_id = tp.plan_id),
+        '[]'::jsonb
+      ),
+      'mesocycles',   COALESCE(
+        (SELECT pm.mesocycles FROM plan_mesocycles pm WHERE pm.plan_id = tp.plan_id),
+        '[]'::jsonb
+      ),
+      'microcycles',  COALESCE(
+        (SELECT pmi.microcycles FROM plan_microcycles pmi WHERE pmi.plan_id = tp.plan_id),
+        '[]'::jsonb
+      )
+    )
   FROM training_plans tp
-  WHERE tp.plan_id = p_plan_id AND tp.deleted_at IS NULL;
+  WHERE tp.plan_id    = p_plan_id
+    AND tp.deleted_at IS NULL;
 $$;
 
 
@@ -541,6 +623,26 @@ CREATE TABLE IF NOT EXISTS "public"."domains" (
 ALTER TABLE "public"."domains" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."exercise_tag_assignments" (
+    "assignment_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "exercise_id" "uuid" NOT NULL,
+    "tag_id" "uuid" NOT NULL
+);
+
+
+ALTER TABLE "public"."exercise_tag_assignments" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."exercise_tags" (
+    "tag_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "name" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."exercise_tags" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."location_operating_hours" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "location_id" "uuid" NOT NULL,
@@ -657,7 +759,6 @@ CREATE TABLE IF NOT EXISTS "public"."training_exercises" (
     "exercise_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" "text" NOT NULL,
     "description" "text",
-    "muscle_groups" "text"[] DEFAULT '{}'::"text"[] NOT NULL,
     "video_url" "text",
     "execution_type" "public"."execution_type",
     "default_tempo" "text",
@@ -666,7 +767,8 @@ CREATE TABLE IF NOT EXISTS "public"."training_exercises" (
     "default_rest_seconds" integer,
     "organization_id" "uuid",
     "deleted_at" timestamp with time zone,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "is_active" boolean DEFAULT true NOT NULL
 );
 
 
@@ -678,10 +780,10 @@ CREATE TABLE IF NOT EXISTS "public"."training_mesocycles" (
     "plan_id" "uuid" NOT NULL,
     "name" "text" NOT NULL,
     "order_index" integer DEFAULT 0 NOT NULL,
-    "periodization_type" "public"."periodization_type",
     "deleted_at" timestamp with time zone,
     "organization_id" "uuid" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "is_active" boolean DEFAULT false NOT NULL
 );
 
 
@@ -699,6 +801,7 @@ CREATE TABLE IF NOT EXISTS "public"."training_microcycles" (
     "deleted_at" timestamp with time zone,
     "organization_id" "uuid" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "is_active" boolean DEFAULT false NOT NULL,
     CONSTRAINT "chk_microcycle_parent" CHECK ((((("mesocycle_id" IS NOT NULL))::integer + (("plan_id" IS NOT NULL))::integer) = 1))
 );
 
@@ -716,7 +819,8 @@ CREATE TABLE IF NOT EXISTS "public"."training_plans" (
     "start_date" "date",
     "end_date" "date",
     "deleted_at" timestamp with time zone,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "is_active" boolean DEFAULT false NOT NULL
 );
 
 
@@ -760,6 +864,7 @@ CREATE TABLE IF NOT EXISTS "public"."training_sessions" (
     "deleted_at" timestamp with time zone,
     "organization_id" "uuid" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "is_active" boolean DEFAULT false NOT NULL,
     CONSTRAINT "chk_days_of_week" CHECK ((("day_of_week" IS NULL) OR ("day_of_week" <@ ARRAY[0, 1, 2, 3, 4, 5, 6]))),
     CONSTRAINT "chk_session_parent" CHECK (((((("microcycle_id" IS NOT NULL))::integer + (("mesocycle_id" IS NOT NULL))::integer) + (("plan_id" IS NOT NULL))::integer) = 1))
 );
@@ -843,6 +948,26 @@ ALTER TABLE ONLY "public"."domains"
 
 ALTER TABLE ONLY "public"."domains"
     ADD CONSTRAINT "domains_pkey" PRIMARY KEY ("domain_id");
+
+
+
+ALTER TABLE ONLY "public"."exercise_tag_assignments"
+    ADD CONSTRAINT "exercise_tag_assignments_exercise_id_tag_id_key" UNIQUE ("exercise_id", "tag_id");
+
+
+
+ALTER TABLE ONLY "public"."exercise_tag_assignments"
+    ADD CONSTRAINT "exercise_tag_assignments_pkey" PRIMARY KEY ("assignment_id");
+
+
+
+ALTER TABLE ONLY "public"."exercise_tags"
+    ADD CONSTRAINT "exercise_tags_name_key" UNIQUE ("name");
+
+
+
+ALTER TABLE ONLY "public"."exercise_tags"
+    ADD CONSTRAINT "exercise_tags_pkey" PRIMARY KEY ("tag_id");
 
 
 
@@ -1081,6 +1206,16 @@ ALTER TABLE ONLY "public"."sessions"
 
 ALTER TABLE ONLY "public"."sessions"
     ADD CONSTRAINT "evaluations_region_id_fkey" FOREIGN KEY ("region_id") REFERENCES "public"."regions"("region_id");
+
+
+
+ALTER TABLE ONLY "public"."exercise_tag_assignments"
+    ADD CONSTRAINT "exercise_tag_assignments_exercise_id_fkey" FOREIGN KEY ("exercise_id") REFERENCES "public"."training_exercises"("exercise_id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."exercise_tag_assignments"
+    ADD CONSTRAINT "exercise_tag_assignments_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "public"."exercise_tags"("tag_id") ON DELETE CASCADE;
 
 
 
@@ -1384,6 +1519,48 @@ CREATE POLICY "domains_select" ON "public"."domains" FOR SELECT TO "authenticate
 
 
 
+ALTER TABLE "public"."exercise_tag_assignments" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "exercise_tag_assignments_delete" ON "public"."exercise_tag_assignments" FOR DELETE USING ((EXISTS ( SELECT 1
+   FROM "public"."training_exercises" "e"
+  WHERE (("e"."exercise_id" = "exercise_tag_assignments"."exercise_id") AND (("e"."organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("e"."organization_id" IS NULL) AND (EXISTS ( SELECT 1
+           FROM "public"."user_roles"
+          WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE"))))))))));
+
+
+
+CREATE POLICY "exercise_tag_assignments_insert" ON "public"."exercise_tag_assignments" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."training_exercises" "e"
+  WHERE (("e"."exercise_id" = "exercise_tag_assignments"."exercise_id") AND (("e"."organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("e"."organization_id" IS NULL) AND (EXISTS ( SELECT 1
+           FROM "public"."user_roles"
+          WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE"))))))))));
+
+
+
+CREATE POLICY "exercise_tag_assignments_select" ON "public"."exercise_tag_assignments" FOR SELECT USING (true);
+
+
+
+ALTER TABLE "public"."exercise_tags" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "exercise_tags_delete" ON "public"."exercise_tags" FOR DELETE USING ((EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE")))));
+
+
+
+CREATE POLICY "exercise_tags_insert" ON "public"."exercise_tags" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE")))));
+
+
+
+CREATE POLICY "exercise_tags_select" ON "public"."exercise_tags" FOR SELECT USING (true);
+
+
+
 ALTER TABLE "public"."location_operating_hours" ENABLE ROW LEVEL SECURITY;
 
 
@@ -1536,11 +1713,15 @@ CREATE POLICY "sessions_update" ON "public"."sessions" FOR UPDATE TO "authentica
 ALTER TABLE "public"."training_exercises" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "training_exercises_delete" ON "public"."training_exercises" FOR DELETE USING (("organization_id" = "public"."current_organization_id"()));
+CREATE POLICY "training_exercises_delete" ON "public"."training_exercises" FOR DELETE USING ((("organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("organization_id" IS NULL) AND (EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE")))))));
 
 
 
-CREATE POLICY "training_exercises_insert" ON "public"."training_exercises" FOR INSERT WITH CHECK (("organization_id" = "public"."current_organization_id"()));
+CREATE POLICY "training_exercises_insert" ON "public"."training_exercises" FOR INSERT WITH CHECK ((("organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("organization_id" IS NULL) AND (EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE")))))));
 
 
 
@@ -1548,7 +1729,11 @@ CREATE POLICY "training_exercises_select" ON "public"."training_exercises" FOR S
 
 
 
-CREATE POLICY "training_exercises_update" ON "public"."training_exercises" FOR UPDATE USING (("organization_id" = "public"."current_organization_id"())) WITH CHECK (("organization_id" = "public"."current_organization_id"()));
+CREATE POLICY "training_exercises_update" ON "public"."training_exercises" FOR UPDATE USING ((("organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("organization_id" IS NULL) AND (EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE"))))))) WITH CHECK ((("organization_id" = (("auth"."jwt"() ->> 'organization_id'::"text"))::"uuid") OR (("organization_id" IS NULL) AND (EXISTS ( SELECT 1
+   FROM "public"."user_roles"
+  WHERE (("user_roles"."user_id" = "auth"."uid"()) AND ("user_roles"."role" = 'SUPERADMIN'::"public"."USER_ROLE")))))));
 
 
 
@@ -1867,9 +2052,6 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-
-
-
 GRANT ALL ON FUNCTION "public"."create_training_plan"("p_name" "text", "p_patient_id" "uuid", "p_organization_id" "uuid", "p_professional_id" "uuid", "p_start_date" "date", "p_end_date" "date", "p_description" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."create_training_plan"("p_name" "text", "p_patient_id" "uuid", "p_organization_id" "uuid", "p_professional_id" "uuid", "p_start_date" "date", "p_end_date" "date", "p_description" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."create_training_plan"("p_name" "text", "p_patient_id" "uuid", "p_organization_id" "uuid", "p_professional_id" "uuid", "p_start_date" "date", "p_end_date" "date", "p_description" "text") TO "service_role";
@@ -1996,6 +2178,18 @@ GRANT ALL ON TABLE "public"."availability_overrides" TO "service_role";
 GRANT ALL ON TABLE "public"."domains" TO "anon";
 GRANT ALL ON TABLE "public"."domains" TO "authenticated";
 GRANT ALL ON TABLE "public"."domains" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."exercise_tag_assignments" TO "anon";
+GRANT ALL ON TABLE "public"."exercise_tag_assignments" TO "authenticated";
+GRANT ALL ON TABLE "public"."exercise_tag_assignments" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."exercise_tags" TO "anon";
+GRANT ALL ON TABLE "public"."exercise_tags" TO "authenticated";
+GRANT ALL ON TABLE "public"."exercise_tags" TO "service_role";
 
 
 

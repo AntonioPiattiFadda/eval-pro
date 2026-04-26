@@ -4,7 +4,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict UxeOxHiljMf7EGEmTyRhheiNQRL7dsz5L6MOjO8ZUkrtFQkK2iqSG9sq42aW68S
+-- \restrict WZ8yr4ETDtz4f7FIBiw8fN7eWSBuEm1tS0CcOsQYP7dP5kLFkWqaTkFPkUz6Rwn
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -50,7 +50,7 @@ COPY "auth"."flow_state" ("id", "user_id", "auth_code", "code_challenge_method",
 --
 
 COPY "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") FROM stdin;
-00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-11 12:35:20.025713+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-11 13:33:23.755531+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-26 19:21:57.917782+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-26 21:19:00.675706+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	9713d8a7-addb-42bd-948e-5015042e0b36	authenticated	authenticated	milibustosm10@gmail.com	$2a$10$Dp0QqKQ84SFxE9g9Q4adduSUkh7PrzBGS0ys1Dp7xec.mpqBJILUe	2026-04-04 19:46:29.953719+00	2026-04-04 19:46:17.218944+00		\N		\N			\N	2026-04-04 19:46:29.96828+00	{"provider": "email", "providers": ["email"]}	{"email_verified": true}	\N	2026-04-04 19:46:17.13427+00	2026-04-04 19:46:35.987625+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
@@ -89,6 +89,7 @@ COPY "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id"
 573c4557-2ee7-463f-98a4-e21c66b0e2ec	9713d8a7-addb-42bd-948e-5015042e0b36	2026-04-04 19:46:29.968366+00	2026-04-04 19:46:29.968366+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
 033c704a-34e9-445e-bb59-10bc650245b4	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-06 02:40:20.944892+00	2026-04-06 02:40:20.944892+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
 b7e72150-76b5-4f25-8e0e-943cd16317cc	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-11 12:35:20.02581+00	2026-04-11 13:33:23.763232+00	\N	aal1	\N	2026-04-11 13:33:23.763143	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
+0a406f0c-6dc1-4b1d-a366-fb46faef6bc8	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 19:21:57.917881+00	2026-04-26 21:19:00.683661+00	\N	aal1	\N	2026-04-26 21:19:00.683549	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36	190.224.83.71	\N	\N	\N	\N	\N
 \.
 
 
@@ -100,6 +101,7 @@ COPY "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "authent
 573c4557-2ee7-463f-98a4-e21c66b0e2ec	2026-04-04 19:46:30.015061+00	2026-04-04 19:46:30.015061+00	otp	cae5c561-8b54-47e6-9bd4-608997cb3807
 033c704a-34e9-445e-bb59-10bc650245b4	2026-04-06 02:40:20.999734+00	2026-04-06 02:40:20.999734+00	password	9222785a-6329-4815-887f-e0e4014f5b97
 b7e72150-76b5-4f25-8e0e-943cd16317cc	2026-04-11 12:35:20.066819+00	2026-04-11 12:35:20.066819+00	password	9f02020a-b303-4d82-bb8e-904b75d7af98
+0a406f0c-6dc1-4b1d-a366-fb46faef6bc8	2026-04-26 19:21:57.99707+00	2026-04-26 19:21:57.99707+00	password	1ada3caf-4a18-4c10-b376-000a557db756
 \.
 
 
@@ -160,6 +162,9 @@ COPY "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked"
 00000000-0000-0000-0000-000000000000	57	icv2j2ymceko	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-06 02:40:20.973685+00	2026-04-06 02:40:20.973685+00	\N	033c704a-34e9-445e-bb59-10bc650245b4
 00000000-0000-0000-0000-000000000000	58	z7l66zkspsz2	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-11 12:35:20.04437+00	2026-04-11 13:33:23.715225+00	\N	b7e72150-76b5-4f25-8e0e-943cd16317cc
 00000000-0000-0000-0000-000000000000	59	2jze5to6ijrr	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-11 13:33:23.739552+00	2026-04-11 13:33:23.739552+00	z7l66zkspsz2	b7e72150-76b5-4f25-8e0e-943cd16317cc
+00000000-0000-0000-0000-000000000000	60	ylko4szcil2n	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-26 19:21:57.961336+00	2026-04-26 20:20:29.535121+00	\N	0a406f0c-6dc1-4b1d-a366-fb46faef6bc8
+00000000-0000-0000-0000-000000000000	61	qjr4jdisghn4	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-26 20:20:29.548183+00	2026-04-26 21:19:00.640677+00	ylko4szcil2n	0a406f0c-6dc1-4b1d-a366-fb46faef6bc8
+00000000-0000-0000-0000-000000000000	62	jndqigxejj46	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-26 21:19:00.663366+00	2026-04-26 21:19:00.663366+00	qjr4jdisghn4	0a406f0c-6dc1-4b1d-a366-fb46faef6bc8
 \.
 
 
@@ -245,6 +250,7 @@ COPY "public"."users" ("created_at", "email", "user_id", "organization_id", "ful
 
 COPY "public"."patients" ("patient_id", "user_id", "created_at", "organization_id") FROM stdin;
 b527db45-d275-4d9f-986c-65aca380e1e1	9713d8a7-addb-42bd-948e-5015042e0b36	2026-04-04 19:46:19.180516+00	04fc3620-f577-429a-9f1d-e7cd2a5d2192
+1e8cee76-e0ec-43e2-979e-366e308ee856	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 21:04:56.010292+00	04fc3620-f577-429a-9f1d-e7cd2a5d2192
 \.
 
 
@@ -376,6 +382,38 @@ COPY "public"."availability_overrides" ("id", "professional_id", "date_from", "d
 
 
 --
+-- Data for Name: exercise_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."exercise_tags" ("tag_id", "name", "created_at") FROM stdin;
+c9f4206c-c1a7-479e-9672-0db534c6b42a	Tracción	2026-04-26 20:08:39.265807+00
+6491887f-8b5d-4cc9-a0dc-ef9d505c2bf0	Empuje	2026-04-26 20:08:45.403889+00
+\.
+
+
+--
+-- Data for Name: training_exercises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."training_exercises" ("exercise_id", "name", "description", "video_url", "execution_type", "default_tempo", "default_sets", "default_reps", "default_rest_seconds", "organization_id", "deleted_at", "created_at", "is_active") FROM stdin;
+6638c9c8-55f9-4f57-b990-f841456c7637	Dominada amplia	\N	https://www.youtube.com/shorts/BT3CSQKeEww	\N	\N	\N	\N	0	\N	\N	2026-04-26 20:12:12.517026+00	t
+f3410932-9bcf-4cc7-9be2-96ab50a8fcaa	asc	\N	\N	\N	\N	\N	\N	0	\N	2026-04-26 20:19:02.884+00	2026-04-26 20:14:40.382067+00	f
+8f8762ef-8430-4753-8344-0184b58a6f52	Press De Banca	\N	https://www.youtube.com/watch?v=jlFl7WJ1TzI	EXPLOSIVE	\N	\N	\N	0	\N	\N	2026-04-26 20:09:39.28569+00	t
+5001aafe-852d-4c29-b806-84d190c401ca	Sentadilla Isometrica en Pared	\N	\N	ISOMETRIC	\N	\N	\N	0	\N	\N	2026-04-26 20:28:54.226551+00	t
+\.
+
+
+--
+-- Data for Name: exercise_tag_assignments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."exercise_tag_assignments" ("assignment_id", "exercise_id", "tag_id") FROM stdin;
+fae300c9-03f5-4a4d-b4cc-347bc0c1c84e	6638c9c8-55f9-4f57-b990-f841456c7637	c9f4206c-c1a7-479e-9672-0db534c6b42a
+abe30d53-4fa1-434a-bd96-85c97d143b74	8f8762ef-8430-4753-8344-0184b58a6f52	6491887f-8b5d-4cc9-a0dc-ef9d505c2bf0
+\.
+
+
+--
 -- Data for Name: location_operating_hours; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -392,19 +430,14 @@ COPY "public"."session_derivations" ("derivation_id", "source_session_id", "deri
 
 
 --
--- Data for Name: training_exercises; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY "public"."training_exercises" ("exercise_id", "name", "description", "muscle_groups", "video_url", "execution_type", "default_tempo", "default_sets", "default_reps", "default_rest_seconds", "organization_id", "deleted_at", "created_at") FROM stdin;
-\.
-
-
---
 -- Data for Name: training_plans; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."training_plans" ("plan_id", "name", "description", "patient_id", "organization_id", "professional_id", "start_date", "end_date", "deleted_at", "created_at") FROM stdin;
-1972e7cd-a0a9-4255-9cd2-50ca33730f59	Test	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-11	\N	\N	2026-04-11 13:00:43.368217+00
+COPY "public"."training_plans" ("plan_id", "name", "description", "patient_id", "organization_id", "professional_id", "start_date", "end_date", "deleted_at", "created_at", "is_active") FROM stdin;
+1972e7cd-a0a9-4255-9cd2-50ca33730f59	Test	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-11	\N	\N	2026-04-11 13:00:43.368217+00	f
+6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Rehabilitacion LCA	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-27	\N	\N	2026-04-26 19:28:38.062743+00	f
+1a73e3f1-8a76-4702-a07c-e61558ac6302	LCA	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-27	\N	\N	2026-04-26 19:40:20.1414+00	f
+2257b7cb-e870-4ba4-99a5-4d110279a1e9	Plan de Fuerza 	\N	1e8cee76-e0ec-43e2-979e-366e308ee856	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-26	\N	\N	2026-04-26 21:05:01.825362+00	t
 \.
 
 
@@ -412,9 +445,15 @@ COPY "public"."training_plans" ("plan_id", "name", "description", "patient_id", 
 -- Data for Name: training_mesocycles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."training_mesocycles" ("mesocycle_id", "plan_id", "name", "order_index", "periodization_type", "deleted_at", "organization_id", "created_at") FROM stdin;
-0c9a969b-074f-4d9f-b8ea-85528ddbee7d	1972e7cd-a0a9-4255-9cd2-50ca33730f59	dbsrt	0	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:23:47.479864+00
-1cd2c887-5f1b-45b9-bff2-44a0360dfb32	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Fase aguda	1	BLOCK	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:51.505348+00
+COPY "public"."training_mesocycles" ("mesocycle_id", "plan_id", "name", "order_index", "deleted_at", "organization_id", "created_at", "is_active") FROM stdin;
+0c9a969b-074f-4d9f-b8ea-85528ddbee7d	1972e7cd-a0a9-4255-9cd2-50ca33730f59	dbsrt	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:23:47.479864+00	f
+1cd2c887-5f1b-45b9-bff2-44a0360dfb32	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Fase aguda	1	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:51.505348+00	f
+c96c95a3-e946-4c36-a03a-43095a7357d9	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Fase aguda	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:29:00.549228+00	f
+bd754b32-0bf6-4445-80ea-89f8023306f2	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Fase Sbaguda	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:30:41.41216+00	f
+9472b5a9-91b6-4e8b-a3af-b3c5473c12f0	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	kujvfkujgy	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:38:42.993431+00	f
+cec9f8be-54bd-4a39-80e3-83e7949159b9	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	HOLAS	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:39:39.648936+00	f
+ecd55e5a-b775-49ec-a749-c537020d6870	1a73e3f1-8a76-4702-a07c-e61558ac6302	Fase Agud	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:50:20.119182+00	f
+e019563d-e63c-497f-84d8-418ac4c5b6c4	2257b7cb-e870-4ba4-99a5-4d110279a1e9	Fase Pre Nacional	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:16.730242+00	t
 \.
 
 
@@ -422,9 +461,12 @@ COPY "public"."training_mesocycles" ("mesocycle_id", "plan_id", "name", "order_i
 -- Data for Name: training_microcycles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."training_microcycles" ("microcycle_id", "mesocycle_id", "plan_id", "name", "order_index", "repeat_count", "duration_days", "deleted_at", "organization_id", "created_at") FROM stdin;
-2c031011-cb90-46e4-a602-781dae88fd77	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	mu	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:10.857426+00
-06068a5a-d00e-4c92-9464-ec07f9751683	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Semana de carga	1	1	15	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:18.405287+00
+COPY "public"."training_microcycles" ("microcycle_id", "mesocycle_id", "plan_id", "name", "order_index", "repeat_count", "duration_days", "deleted_at", "organization_id", "created_at", "is_active") FROM stdin;
+2c031011-cb90-46e4-a602-781dae88fd77	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	mu	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:10.857426+00	f
+06068a5a-d00e-4c92-9464-ec07f9751683	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	Semana de carga	1	1	15	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:22:18.405287+00	f
+8a7288a9-aa28-4821-ab04-35bd4b1f9f0c	c96c95a3-e946-4c36-a03a-43095a7357d9	\N	Adaptacion	0	2	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:30:54.210586+00	f
+8918495d-915a-41f3-b95d-c2bc5d9b2fc5	ecd55e5a-b775-49ec-a749-c537020d6870	\N	Semana 1	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:50:40.187708+00	f
+fa5d0dec-8d4c-4fe6-a793-a672ae577b9f	e019563d-e63c-497f-84d8-418ac4c5b6c4	\N	Semana de Carga	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:41.651304+00	t
 \.
 
 
@@ -432,10 +474,15 @@ COPY "public"."training_microcycles" ("microcycle_id", "mesocycle_id", "plan_id"
 -- Data for Name: training_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."training_sessions" ("session_id", "microcycle_id", "mesocycle_id", "plan_id", "name", "day_of_week", "order_index", "deleted_at", "organization_id", "created_at") FROM stdin;
-5b7f7cfb-9676-4032-95a9-29338b303684	\N	1cd2c887-5f1b-45b9-bff2-44a0360dfb32	\N	payment_method	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:33:38.103615+00
-4b33b583-27d1-4503-b2d9-498e9ee3ea42	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D	{0}	1	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:18:04.370772+00
-a13b731d-94b6-47cf-9247-5438b49ef1cf	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D2	{1}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:42.847365+00
+COPY "public"."training_sessions" ("session_id", "microcycle_id", "mesocycle_id", "plan_id", "name", "day_of_week", "order_index", "deleted_at", "organization_id", "created_at", "is_active") FROM stdin;
+5b7f7cfb-9676-4032-95a9-29338b303684	\N	1cd2c887-5f1b-45b9-bff2-44a0360dfb32	\N	payment_method	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:33:38.103615+00	f
+4b33b583-27d1-4503-b2d9-498e9ee3ea42	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D	{0}	1	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:18:04.370772+00	f
+a13b731d-94b6-47cf-9247-5438b49ef1cf	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	D2	{1}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-11 13:24:42.847365+00	f
+c538770a-bced-42af-818b-bce3b4c5c8e9	8a7288a9-aa28-4821-ab04-35bd4b1f9f0c	\N	\N	Dia 2	{1,3}	2	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:31:34.188955+00	f
+407145b0-bc78-4da6-8a5c-edcd8d5bd67c	8a7288a9-aa28-4821-ab04-35bd4b1f9f0c	\N	\N	DIa 1	{0,2,4}	1	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:31:07.49223+00	f
+008e7a74-4b03-433e-ba37-969d517f9472	\N	\N	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Estiramiento	{0}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:35:09.71666+00	f
+28b64335-b258-4a78-96f7-ad2971446f16	8918495d-915a-41f3-b95d-c2bc5d9b2fc5	\N	\N	Dia 1	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:56:02.062478+00	f
+616e0ab9-5f9c-44b8-b627-f3789986b551	fa5d0dec-8d4c-4fe6-a793-a672ae577b9f	\N	\N	Dia 1	{0}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:28.540363+00	t
 \.
 
 
@@ -444,6 +491,10 @@ a13b731d-94b6-47cf-9247-5438b49ef1cf	\N	\N	1972e7cd-a0a9-4255-9cd2-50ca33730f59	
 --
 
 COPY "public"."training_session_exercises" ("session_exercise_id", "session_id", "exercise_id", "sets", "reps", "set_duration_seconds", "rep_duration_seconds", "load_value", "load_unit", "rest_seconds", "order_index", "group_label", "notes", "deleted_at", "organization_id", "created_at") FROM stdin;
+3b0876b1-6aa9-40d7-95cb-f4e7f1d62e6b	28b64335-b258-4a78-96f7-ad2971446f16	8f8762ef-8430-4753-8344-0184b58a6f52	3	8	\N	\N	70	PERCENTAGE_VELOCITY	120	0	A	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:56:28.262312+00
+7b5a92da-1b5a-4fd3-b525-4db8e3fad0dc	28b64335-b258-4a78-96f7-ad2971446f16	5001aafe-852d-4c29-b806-84d190c401ca	3	\N	12	\N	\N	NONE	0	0	\N	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:02:36.256261+00
+b39cc9d6-91de-4149-9a71-af12e0d93dcc	616e0ab9-5f9c-44b8-b627-f3789986b551	6638c9c8-55f9-4f57-b990-f841456c7637	4	8	\N	\N	70	PERCENTAGE_VELOCITY	120	0	A	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:06:12.398082+00
+ba75a979-5c28-4f04-bc09-ab89af6c3a65	616e0ab9-5f9c-44b8-b627-f3789986b551	8f8762ef-8430-4753-8344-0184b58a6f52	4	8	\N	\N	70	PERCENTAGE_VELOCITY	120	0	A	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:06:42.936161+00
 \.
 
 
@@ -528,13 +579,13 @@ COPY "storage"."vector_indexes" ("id", "name", "bucket_id", "data_type", "dimens
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 59, true);
+SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 62, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict UxeOxHiljMf7EGEmTyRhheiNQRL7dsz5L6MOjO8ZUkrtFQkK2iqSG9sq42aW68S
+-- \unrestrict WZ8yr4ETDtz4f7FIBiw8fN7eWSBuEm1tS0CcOsQYP7dP5kLFkWqaTkFPkUz6Rwn
 
 RESET ALL;
