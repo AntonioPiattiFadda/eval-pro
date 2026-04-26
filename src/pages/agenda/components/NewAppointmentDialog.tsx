@@ -17,8 +17,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { createAppointment } from '../services/appointments.service'
-import { type Patient } from '../services/patients.service'
-import { PatientStep } from './PatientStep'
+import { PatientSelector } from '@/components/PatientSelector'
+import type { Patient } from '@/types/patients'
 
 const schema = z.object({
   date: z.string().min(1, 'Requerido'),
@@ -138,15 +138,12 @@ export function NewAppointmentDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Paciente</Label>
-            <PatientStep
-              selectedPatient={selectedPatient}
+            <PatientSelector
+              value={selectedPatient}
               organizationId={profile!.organization_id!}
-              onSelect={(p) => { setSelectedPatient(p); setPatientError(false) }}
-              onClear={() => setSelectedPatient(null)}
+              onChange={(p) => { setSelectedPatient(p); if (p) setPatientError(false) }}
+              error={patientError ? 'Seleccioná un paciente' : undefined}
             />
-            {patientError && (
-              <p className="text-xs text-destructive">Seleccioná un paciente</p>
-            )}
           </div>
 
           <div className="space-y-1.5">

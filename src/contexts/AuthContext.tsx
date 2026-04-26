@@ -26,21 +26,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const loadSession = async () => {
-      console.log('[auth] loadSession — checking session...')
       const { data: { session } } = await supabase.auth.getSession()
 
       if (session?.user) {
-        console.log('[auth] loadSession — session found, user id:', session.user.id)
         const userProfile = await getUserProfile(session.user.id)
         if (userProfile) {
-          console.log('[auth] loadSession — profile loaded, roles:', userProfile.roles)
           setUser(session.user)
           setProfile(userProfile)
-        } else {
-          console.warn('[auth] loadSession — session exists but no profile found for user:', session.user.id)
         }
-      } else {
-        console.log('[auth] loadSession — no active session')
       }
 
       setLoading(false)

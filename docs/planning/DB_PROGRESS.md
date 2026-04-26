@@ -1,8 +1,8 @@
 # EvalPro — DB Implementation Progress
 
 ## Summary
-- **Done:** 20 / 42
-- **Pending:** 22 / 42
+- **Done:** 28 / 50
+- **Pending:** 22 / 50
 
 ---
 
@@ -87,6 +87,18 @@
 | `evaluation_evolutions` | Session-to-session progress tracking |
 | `interdomain_referral_rules` | When to suggest another domain based on evolution or findings |
 | `objective_domains` | Required/recommended domains per patient objective |
+
+### Training Module
+| Table | Notes |
+|---|---|
+| `training_exercises` | Catálogo global + por org. `organization_id IS NULL` = global (superadmin). Enums: `execution_type` (EXPLOSIVE\|CONTROLLED\|ISOMETRIC\|BALLISTIC). Sin `muscle_groups` — reemplazado por etiquetas. |
+| `exercise_tags` | Catálogo de etiquetas gestionado por SUPERADMIN. UNIQUE(name). Write-only para superadmin, select público. |
+| `exercise_tag_assignments` | Join table ejercicio ↔ etiquetas. UNIQUE(exercise_id, tag_id). ON DELETE CASCADE en ambas FK. |
+| `training_plans` | Plan de entrenamiento por paciente + org + profesional. Fechas opcionales. |
+| `training_mesocycles` | Bloque dentro de un plan. `periodization_type` enum (LINEAR\|UNDULATING\|BLOCK\|CONJUGATE). |
+| `training_microcycles` | Semana/ciclo dentro de un mesociclo o directo al plan. `repeat_count` + `duration_days`. |
+| `training_sessions` | Día de entrenamiento. `day_of_week int[]`. Puede colgar de plan/mesociclo/microciclo (XOR). |
+| `training_session_exercises` | Ejercicio dentro de una sesión. Sets, reps o duration (XOR). `load_unit` enum (KG\|PERCENTAGE_1RM\|RPE\|NONE). `group_label` para supersets. |
 
 ### Scheduling
 | Table | Notes |

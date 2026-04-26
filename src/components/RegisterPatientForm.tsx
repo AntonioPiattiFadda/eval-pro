@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { invitePatient } from '@/service/patients'
+import { invitePatient } from '@/service/patients.service'
 import type { Patient } from '@/types/patients'
 
 interface Props {

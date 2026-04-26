@@ -1,4 +1,4 @@
-import { Calendar, Users, Settings, Building2 } from 'lucide-react'
+import { Calendar, Users, Settings, Building2, Dumbbell } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import {
   Sidebar,
@@ -17,15 +17,21 @@ import { useAuth } from '@/contexts/AuthContext'
 const professionalNavItems = [
   { title: 'Agenda', url: '/professional/agenda', icon: Calendar },
   { title: 'Pacientes', url: '/professional/patients', icon: Users },
+  { title: 'Entrenamientos', url: '/professional/training-plans', icon: Dumbbell },
 ]
 
 const adminNavItems = [
   { title: 'Organización', url: '/admin/organizations', icon: Building2 },
 ]
 
+const superadminNavItems = [
+  { title: 'Banco de ejercicios', url: '/superadmin/exercise-bank', icon: Dumbbell },
+]
+
 export function AppSidebar() {
   const { activeRole } = useAuth()
   const isAdmin = activeRole === 'ADMIN' || activeRole === 'SUPERADMIN'
+  const isSuperadmin = activeRole === 'SUPERADMIN'
 
   return (
     <Sidebar collapsible="icon">
@@ -67,6 +73,18 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminNavItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <NavLink to={item.url}>
+                      {({ isActive }) => (
+                        <SidebarMenuButton isActive={isActive} tooltip={item.title}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      )}
+                    </NavLink>
+                  </SidebarMenuItem>
+                ))}
+                {isSuperadmin && superadminNavItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <NavLink to={item.url}>
                       {({ isActive }) => (
