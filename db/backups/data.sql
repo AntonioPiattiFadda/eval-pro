@@ -4,7 +4,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict WZ8yr4ETDtz4f7FIBiw8fN7eWSBuEm1tS0CcOsQYP7dP5kLFkWqaTkFPkUz6Rwn
+-- \restrict NAOooj0L0Dl5Dhyok7W1kkQ9s53kUGKeOttMO9g7uswcg4uUKSoXTbll9XtzfjN
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -438,6 +438,7 @@ COPY "public"."training_plans" ("plan_id", "name", "description", "patient_id", 
 6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Rehabilitacion LCA	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-27	\N	\N	2026-04-26 19:28:38.062743+00	f
 1a73e3f1-8a76-4702-a07c-e61558ac6302	LCA	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-27	\N	\N	2026-04-26 19:40:20.1414+00	f
 2257b7cb-e870-4ba4-99a5-4d110279a1e9	Plan de Fuerza 	\N	1e8cee76-e0ec-43e2-979e-366e308ee856	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-26	\N	\N	2026-04-26 21:05:01.825362+00	t
+0249f72f-b074-4667-ac3c-744eeae24d37	Plan de Musculacion	\N	b527db45-d275-4d9f-986c-65aca380e1e1	04fc3620-f577-429a-9f1d-e7cd2a5d2192	d3165401-5132-4230-8309-64d4e661ec6d	2026-04-27	\N	\N	2026-04-26 21:58:03.045084+00	t
 \.
 
 
@@ -454,6 +455,7 @@ bd754b32-0bf6-4445-80ea-89f8023306f2	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Fase S
 cec9f8be-54bd-4a39-80e3-83e7949159b9	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	HOLAS	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:39:39.648936+00	f
 ecd55e5a-b775-49ec-a749-c537020d6870	1a73e3f1-8a76-4702-a07c-e61558ac6302	Fase Agud	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:50:20.119182+00	f
 e019563d-e63c-497f-84d8-418ac4c5b6c4	2257b7cb-e870-4ba4-99a5-4d110279a1e9	Fase Pre Nacional	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:16.730242+00	t
+e299ebe0-0b56-42cf-9c89-71cc5ea1db78	0249f72f-b074-4667-ac3c-744eeae24d37	Fase de entrenameinto de Fuerza	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:58:18.940514+00	t
 \.
 
 
@@ -467,6 +469,7 @@ COPY "public"."training_microcycles" ("microcycle_id", "mesocycle_id", "plan_id"
 8a7288a9-aa28-4821-ab04-35bd4b1f9f0c	c96c95a3-e946-4c36-a03a-43095a7357d9	\N	Adaptacion	0	2	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:30:54.210586+00	f
 8918495d-915a-41f3-b95d-c2bc5d9b2fc5	ecd55e5a-b775-49ec-a749-c537020d6870	\N	Semana 1	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:50:40.187708+00	f
 fa5d0dec-8d4c-4fe6-a793-a672ae577b9f	e019563d-e63c-497f-84d8-418ac4c5b6c4	\N	Semana de Carga	0	1	7	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:41.651304+00	t
+d7a0fc2b-b47c-4580-9d9e-33ecff2793dd	e299ebe0-0b56-42cf-9c89-71cc5ea1db78	\N	Adaptacion	0	1	30	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:58:38.291111+00	t
 \.
 
 
@@ -483,6 +486,7 @@ c538770a-bced-42af-818b-bce3b4c5c8e9	8a7288a9-aa28-4821-ab04-35bd4b1f9f0c	\N	\N	
 008e7a74-4b03-433e-ba37-969d517f9472	\N	\N	6171ae66-6e6d-4aeb-bba4-291b5c8d98dd	Estiramiento	{0}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 19:35:09.71666+00	f
 28b64335-b258-4a78-96f7-ad2971446f16	8918495d-915a-41f3-b95d-c2bc5d9b2fc5	\N	\N	Dia 1	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 20:56:02.062478+00	f
 616e0ab9-5f9c-44b8-b627-f3789986b551	fa5d0dec-8d4c-4fe6-a793-a672ae577b9f	\N	\N	Dia 1	{0}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:05:28.540363+00	t
+74e16c18-213f-4a70-82cf-68462db714d9	d7a0fc2b-b47c-4580-9d9e-33ecff2793dd	\N	\N	Dia 1	{0,2,4}	0	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:58:48.415676+00	t
 \.
 
 
@@ -495,6 +499,7 @@ COPY "public"."training_session_exercises" ("session_exercise_id", "session_id",
 7b5a92da-1b5a-4fd3-b525-4db8e3fad0dc	28b64335-b258-4a78-96f7-ad2971446f16	5001aafe-852d-4c29-b806-84d190c401ca	3	\N	12	\N	\N	NONE	0	0	\N	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:02:36.256261+00
 b39cc9d6-91de-4149-9a71-af12e0d93dcc	616e0ab9-5f9c-44b8-b627-f3789986b551	6638c9c8-55f9-4f57-b990-f841456c7637	4	8	\N	\N	70	PERCENTAGE_VELOCITY	120	0	A	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:06:12.398082+00
 ba75a979-5c28-4f04-bc09-ab89af6c3a65	616e0ab9-5f9c-44b8-b627-f3789986b551	8f8762ef-8430-4753-8344-0184b58a6f52	4	8	\N	\N	70	PERCENTAGE_VELOCITY	120	0	A	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:06:42.936161+00
+af8d43d5-0982-4c4e-89e7-f2126975013e	74e16c18-213f-4a70-82cf-68462db714d9	8f8762ef-8430-4753-8344-0184b58a6f52	3	8	\N	\N	\N	NONE	120	0	\N	\N	\N	04fc3620-f577-429a-9f1d-e7cd2a5d2192	2026-04-26 21:59:01.674886+00
 \.
 
 
@@ -586,6 +591,6 @@ SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 62, true);
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict WZ8yr4ETDtz4f7FIBiw8fN7eWSBuEm1tS0CcOsQYP7dP5kLFkWqaTkFPkUz6Rwn
+-- \unrestrict NAOooj0L0Dl5Dhyok7W1kkQ9s53kUGKeOttMO9g7uswcg4uUKSoXTbll9XtzfjN
 
 RESET ALL;
