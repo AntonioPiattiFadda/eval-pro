@@ -4,7 +4,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict NeQm03mfmGISumTOXJk2s8QKYmecfn52P7cf9Y1V2woJIhtfTXAFaIQKjlq5Tov
+-- \restrict qI1LoY1Hi6RvIJ6oR9y6jf5TdhgicGaHeLLfIliwPyntOne7MmNhc3vnKxjHyNc
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -50,7 +50,7 @@ COPY "auth"."flow_state" ("id", "user_id", "auth_code", "code_challenge_method",
 --
 
 COPY "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") FROM stdin;
-00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-26 22:13:46.600002+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-26 22:13:46.617402+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	f817ca6e-42ba-442c-962e-8ad121686674	authenticated	authenticated	antonio.piattifadda@gmail.com	$2a$10$f7ax7Yk.zFRc.fsLDE7Xwe8RGXX2YIlw91vyUjXOmPFkbNJ8BbkLm	2026-03-28 19:20:18.205545+00	\N		\N		\N			\N	2026-04-26 22:13:46.600002+00	{"provider": "email", "providers": ["email"]}	{"sub": "f817ca6e-42ba-442c-962e-8ad121686674", "email": "antonio.piattifadda@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-03-28 19:20:18.190743+00	2026-04-26 23:29:45.020632+00	\N	\N			\N		0	\N		\N	f	\N	f
 00000000-0000-0000-0000-000000000000	9713d8a7-addb-42bd-948e-5015042e0b36	authenticated	authenticated	milibustosm10@gmail.com	$2a$10$Dp0QqKQ84SFxE9g9Q4adduSUkh7PrzBGS0ys1Dp7xec.mpqBJILUe	2026-04-04 19:46:29.953719+00	2026-04-04 19:46:17.218944+00		\N		\N			\N	2026-04-04 19:46:29.96828+00	{"provider": "email", "providers": ["email"]}	{"email_verified": true}	\N	2026-04-04 19:46:17.13427+00	2026-04-04 19:46:35.987625+00	\N	\N			\N		0	\N		\N	f	\N	f
 \.
 
@@ -91,7 +91,7 @@ COPY "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id"
 b7e72150-76b5-4f25-8e0e-943cd16317cc	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-11 12:35:20.02581+00	2026-04-11 13:33:23.763232+00	\N	aal1	\N	2026-04-11 13:33:23.763143	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36	181.1.232.44	\N	\N	\N	\N	\N
 0a406f0c-6dc1-4b1d-a366-fb46faef6bc8	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 19:21:57.917881+00	2026-04-26 21:19:00.683661+00	\N	aal1	\N	2026-04-26 21:19:00.683549	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36	190.224.83.71	\N	\N	\N	\N	\N
 296a9125-feac-4981-99b0-11eda5e2c9ce	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 22:12:39.472651+00	2026-04-26 22:12:39.472651+00	\N	aal1	\N	\N	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36	190.224.83.71	\N	\N	\N	\N	\N
-1f4e99ef-29de-471d-9742-2e0a73af75e6	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 22:13:46.600771+00	2026-04-26 22:13:46.600771+00	\N	aal1	\N	\N	Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/147.0.7727.99 Mobile/15E148 Safari/604.1	190.224.83.71	\N	\N	\N	\N	\N
+1f4e99ef-29de-471d-9742-2e0a73af75e6	f817ca6e-42ba-442c-962e-8ad121686674	2026-04-26 22:13:46.600771+00	2026-04-26 23:29:45.026512+00	\N	aal1	\N	2026-04-26 23:29:45.026418	Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/147.0.7727.99 Mobile/15E148 Safari/604.1	190.224.83.71	\N	\N	\N	\N	\N
 \.
 
 
@@ -170,7 +170,8 @@ COPY "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked"
 00000000-0000-0000-0000-000000000000	61	qjr4jdisghn4	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-26 20:20:29.548183+00	2026-04-26 21:19:00.640677+00	ylko4szcil2n	0a406f0c-6dc1-4b1d-a366-fb46faef6bc8
 00000000-0000-0000-0000-000000000000	62	jndqigxejj46	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-26 21:19:00.663366+00	2026-04-26 21:19:00.663366+00	qjr4jdisghn4	0a406f0c-6dc1-4b1d-a366-fb46faef6bc8
 00000000-0000-0000-0000-000000000000	63	kstdeonmiqvf	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-26 22:12:39.509773+00	2026-04-26 22:12:39.509773+00	\N	296a9125-feac-4981-99b0-11eda5e2c9ce
-00000000-0000-0000-0000-000000000000	64	bfgc4ftz55vf	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-26 22:13:46.606501+00	2026-04-26 22:13:46.606501+00	\N	1f4e99ef-29de-471d-9742-2e0a73af75e6
+00000000-0000-0000-0000-000000000000	64	bfgc4ftz55vf	f817ca6e-42ba-442c-962e-8ad121686674	t	2026-04-26 22:13:46.606501+00	2026-04-26 23:29:44.985843+00	\N	1f4e99ef-29de-471d-9742-2e0a73af75e6
+00000000-0000-0000-0000-000000000000	65	55p4t7nflq35	f817ca6e-42ba-442c-962e-8ad121686674	f	2026-04-26 23:29:45.011764+00	2026-04-26 23:29:45.011764+00	bfgc4ftz55vf	1f4e99ef-29de-471d-9742-2e0a73af75e6
 \.
 
 
@@ -590,13 +591,13 @@ COPY "storage"."vector_indexes" ("id", "name", "bucket_id", "data_type", "dimens
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 64, true);
+SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 65, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict NeQm03mfmGISumTOXJk2s8QKYmecfn52P7cf9Y1V2woJIhtfTXAFaIQKjlq5Tov
+-- \unrestrict qI1LoY1Hi6RvIJ6oR9y6jf5TdhgicGaHeLLfIliwPyntOne7MmNhc3vnKxjHyNc
 
 RESET ALL;
