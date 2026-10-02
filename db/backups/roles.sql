@@ -1,8 +1,9 @@
 
 SET default_transaction_read_only = off;
 
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = off;
+SET escape_string_warning = off;
 
 ALTER ROLE "anon" SET "statement_timeout" TO '3s';
 
